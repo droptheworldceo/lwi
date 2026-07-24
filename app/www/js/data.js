@@ -112,6 +112,7 @@ window.LWI.addComment = function (postId, comment) {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }));
     tx.update(postRef, { commentCount: firebase.firestore.FieldValue.increment(1) });
+    return Promise.resolve();
   });
 };
 
