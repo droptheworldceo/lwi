@@ -18,7 +18,11 @@ window.LWI.requireAuth = function (onReady) {
         window.location.href = "verify.html";
         return;
       }
-      window.LWI.db.collection("users").doc(user.uid).get().then(function (doc) {
+      // reload()는 user.emailVerified만 갱신하고, Firestore 규칙이 실제로 검사하는
+      // ID 토큰의 email_verified 클레임은 갱신하지 않는다. 강제로 새 토큰을 받아둔다.
+      return user.getIdToken(true).then(function () {
+        return window.LWI.db.collection("users").doc(user.uid).get();
+      }).then(function (doc) {
         if (!doc.exists) {
           window.location.href = "nickname.html";
           return;
