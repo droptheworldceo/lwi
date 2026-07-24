@@ -10,6 +10,10 @@ service cloud.firestore {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && request.resource.data.nickname is string;
       allow update: if isOwner(uid);
+
+      match /checkins/{date} {
+        allow read, write: if isOwner(uid);
+      }
     }
 
     match /channels/{channelId} {
