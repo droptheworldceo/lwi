@@ -73,6 +73,15 @@ window.LWI.getPost = function (postId) {
   });
 };
 
+// 의료광고법 대응: 효능을 단정하는 표현은 게시 전 클라이언트에서 1차 차단.
+// (최종 법률 자문 결과에 따라 목록은 계속 갱신될 수 있음)
+window.LWI.BANNED_TERMS = ["최초", "유일", "100% 치료", "부작용 없음"];
+
+window.LWI.findBannedTerm = function (text) {
+  if (!text) return null;
+  return window.LWI.BANNED_TERMS.find(function (term) { return text.indexOf(term) !== -1; }) || null;
+};
+
 window.LWI.createPost = function (post) {
   return window.LWI.db.collection("posts").add(Object.assign({}, post, {
     empathyCount: 0,

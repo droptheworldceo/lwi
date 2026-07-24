@@ -5,6 +5,10 @@ service cloud.firestore {
     function isSignedIn() { return request.auth != null; }
     function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
     function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+    // 의료광고법 대응: 효능을 단정하는 표현은 서버 규칙에서도 차단(클라이언트 우회 방지).
+    function noBannedTerms(text) {
+      return !text.matches('.*(최초|유일|100% 치료|부작용 없음).*');
+    }
 
     match /users/{uid} {
       allow read: if isOwner(uid);
@@ -25,7 +29,8 @@ service cloud.firestore {
       allow read: if true;
       allow create: if isVerified()
         && request.resource.data.authorUid == request.auth.uid
-        && request.resource.data.kind in ['experience', 'evidence'];
+        && request.resource.data.kind in ['experience', 'evidence']
+        && noBannedTerms(request.resource.data.body);
       allow update: if isVerified() && (
         resource.data.authorUid == request.auth.uid ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['empathyCount', 'commentCount'])
@@ -39,7 +44,8 @@ service cloud.firestore {
 
       match /comments/{commentId} {
         allow read: if true;
-        allow create: if isVerified() && request.resource.data.authorUid == request.auth.uid;
+        allow create: if isVerified() && request.resource.data.authorUid == request.auth.uid
+          && noBannedTerms(request.resource.data.body);
         allow update, delete: if isVerified() && resource.data.authorUid == request.auth.uid;
       }
     }
@@ -49,6 +55,13 @@ service cloud.firestore {
     match /reports/{reportId} {
       allow create: if isVerified() && request.resource.data.reporterUid == request.auth.uid;
       allow read: if isSignedIn() && resource.data.reporterUid == request.auth.uid;
+    }
+
+    // 0단계 사용자 검증 설문: 익명 로그인 사용자도 제출 가능(가입 장벽 없이 외부 참여자를 받기 위함).
+    // 개인 식별 정보를 받지 않으므로 읽기는 막고 쓰기만 허용.
+    match /surveyResponses/{responseId} {
+      allow create: if isSignedIn();
+      allow read: if false;
     }
   }
 }

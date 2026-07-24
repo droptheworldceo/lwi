@@ -52,7 +52,8 @@
       <div class="error" id="err-body"></div>
     </div>
 
-    <p style="font-size:12px; color:var(--ink-faint); margin: -6px 0 18px;">이 내용은 병원 치료를 대체하지 않습니다. 의학적 진단이나 처방으로 오인될 수 있는 단정적 표현은 피해주세요.</p>
+    <p style="font-size:12px; color:var(--ink-faint); margin: -6px 0 18px;">유병장수는 의료행위를 중개·알선하지 않는 정보 공유 목적의 서비스입니다. 이 내용은 병원 치료를 대체하지 않으며, "최초", "유일", "100% 치료", "부작용 없음"처럼 의학적 진단·효능을 단정하는 표현은 게시할 수 없습니다.</p>
+    <p class="error" id="err-banned" style="display:none; margin: -12px 0 18px;"></p>
 
     <button class="btn btn-primary" id="submit-btn">올리기</button>
   </div>
@@ -111,13 +112,24 @@
       var bodyField = document.getElementById("body");
       var body = bodyField.value.trim();
       var errEl = document.getElementById("err-body");
+      var bannedEl = document.getElementById("err-banned");
       bodyField.closest(".field").classList.remove("has-error");
+      bannedEl.style.display = "none";
 
       if (body.length < 10) {
         bodyField.closest(".field").classList.add("has-error");
         errEl.textContent = "10자 이상 적어주세요.";
         return;
       }
+
+      var sourceVal = kind === "evidence" ? document.getElementById("source").value.trim() : "";
+      var banned = window.LWI.findBannedTerm(body) || window.LWI.findBannedTerm(sourceVal);
+      if (banned) {
+        bannedEl.textContent = '"' + banned + '"는 의학적 효능을 단정하는 표현이라 게시할 수 없어요. 문구를 수정해주세요.';
+        bannedEl.style.display = "block";
+        return;
+      }
+
       if (!window.LWI.isConfigured) return;
 
       var selected = select.options[select.selectedIndex];
@@ -129,7 +141,7 @@
         body: body,
         kind: kind
       };
-      if (kind === "evidence") post.sourceNote = document.getElementById("source").value.trim();
+      if (kind === "evidence") post.sourceNote = sourceVal;
 
       window.LWI.createPost(post).then(function (ref) {
         window.location.href = "post.html?id=" + ref.id;

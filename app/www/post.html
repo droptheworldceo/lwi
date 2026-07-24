@@ -45,7 +45,7 @@
       </div>
       <p class="post-body" id="post-body"></p>
       <div class="source-note" id="source-note" style="display:none;"></div>
-      <div class="disclaimer">이 내용은 개인 경험 또는 참고 정보이며, 병원 치료를 대체하지 않습니다.</div>
+      <div class="disclaimer">유병장수는 의료행위를 중개·알선하지 않는 정보 공유 목적의 서비스입니다. 이 내용은 개인 경험 또는 참고 정보이며, 병원 치료를 대체하지 않습니다.</div>
     </div>
 
     <div class="empathy-row">
@@ -179,6 +179,11 @@
       var input = document.getElementById("comment-input");
       var body = input.value.trim();
       if (!body) return;
+      var banned = window.LWI.findBannedTerm(body);
+      if (banned) {
+        window.LWI.showToast('"' + banned + '"는 의학적 효능을 단정하는 표현이라 남길 수 없어요.');
+        return;
+      }
       window.LWI.addComment(postId, { authorUid: uid, authorNickname: profile.nickname, body: body }).then(function () {
         input.value = "";
         return window.LWI.listComments(postId);
