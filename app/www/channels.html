@@ -9,11 +9,16 @@
   .content { flex: 1; overflow-y: auto; padding: 16px 20px 24px; }
   .group-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
   .group-label:first-child { margin-top: 4px; }
-  .ch-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
-  .ch-row a { font-size: 15px; font-weight: 600; flex: 1; }
-  .ch-row .count { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); margin-right: 10px; }
-  .ch-row button { font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 16px; border: 1px solid var(--line-strong); background: none; color: var(--ink-soft); cursor: pointer; }
-  .ch-row button.joined { background: var(--accent-ink); border-color: var(--accent); color: var(--accent-deep); }
+  .ch-row { display: flex; flex-direction: column; gap: 9px; padding: 14px 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
+  .ch-row-top { display: flex; align-items: center; }
+  .ch-row-top a { font-size: 15px; font-weight: 600; flex: 1; }
+  .ch-row-top .count { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); margin-right: 10px; }
+  .ch-row-top button { font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 16px; border: 1px solid var(--line-strong); background: none; color: var(--ink-soft); cursor: pointer; }
+  .ch-row-top button.joined { background: var(--accent-ink); border-color: var(--accent); color: var(--accent-deep); }
+  .promo-track { height: 4px; border-radius: 2px; background: var(--surface-2); overflow: hidden; }
+  .promo-fill { height: 100%; background: var(--accent-2); border-radius: 2px; }
+  .promo-label { font-size: 11px; color: var(--ink-faint); }
+  .promo-label.ready { color: var(--accent-deep); font-weight: 700; }
   .new-channel { margin-top: 26px; padding: 16px; border: 1px dashed var(--line-strong); border-radius: 14px; }
   .new-channel .row { display: flex; gap: 8px; }
   .new-channel input { flex: 1; font-size: 14px; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); }
@@ -26,6 +31,7 @@
   <div class="topbar">
     <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
     <h1>채널</h1>
+    <a class="action" href="search.html" style="display:flex;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></a>
   </div>
   <div class="content">
     <div class="group-label">메인 채널</div>
@@ -69,7 +75,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=4"></script>
+<script src="js/data.js?v=5"></script>
 <script>
   function renderList(el, channels, joined, uid) {
     if (!channels.length) { el.innerHTML = '<div class="empty-state"><p>아직 없어요.</p></div>'; return; }
@@ -78,10 +84,23 @@
       var row = document.createElement("div");
       row.className = "ch-row";
       var isJoined = joined.indexOf(c.id) !== -1;
-      row.innerHTML =
-        '<a href="channel.html?id=' + c.id + '">' + c.name + '</a>' +
-        '<span class="count">' + (c.memberCount || 0) + '명</span>' +
-        '<button data-join="' + c.id + '" class="' + (isJoined ? "joined" : "") + '">' + (isJoined ? "참여중" : "참여하기") + '</button>';
+      var top =
+        '<div class="ch-row-top">' +
+          '<a href="channel.html?id=' + c.id + '">' + c.name + '</a>' +
+          '<span class="count">' + (c.memberCount || 0) + '명</span>' +
+          '<button data-join="' + c.id + '" class="' + (isJoined ? "joined" : "") + '">' + (isJoined ? "참여중" : "참여하기") + '</button>' +
+        '</div>';
+      var promo = "";
+      if (c.tier === "sub") {
+        var count = c.memberCount || 0;
+        var threshold = window.LWI.MAIN_PROMOTION_THRESHOLD;
+        var pct = Math.min(100, Math.round((count / threshold) * 100));
+        promo = count >= threshold
+          ? '<div class="promo-label ready">메인 채널 승격 조건을 채웠어요 · 검토 중</div>'
+          : '<div class="promo-track"><div class="promo-fill" style="width:' + pct + '%"></div></div>' +
+            '<div class="promo-label">메인 채널 승격까지 ' + (threshold - count) + '명</div>';
+      }
+      row.innerHTML = top + promo;
       el.appendChild(row);
     });
     el.querySelectorAll("button[data-join]").forEach(function (btn) {

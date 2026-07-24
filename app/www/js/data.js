@@ -31,6 +31,10 @@ window.LWI.listChannels = function (tier) {
   });
 };
 
+// 서브 채널이 메인 채널로 승격되는 참여자 수 기준. 실제 승격(전환)은 아직
+// 자동화 전이라(Cloud Functions 도입 전) 운영자가 콘솔에서 tier 필드를 바꿔줘야 한다.
+window.LWI.MAIN_PROMOTION_THRESHOLD = 30;
+
 window.LWI.createChannel = function (name, tier) {
   return window.LWI.db.collection("channels").add({
     name: name,

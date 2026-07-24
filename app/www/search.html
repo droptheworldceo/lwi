@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 검색</title>
+<link rel="stylesheet" href="css/lwi.css?v=2">
+<style>
+  .search-bar { padding: 10px 20px 4px; }
+  .search-bar input {
+    width: 100%; font-size: 15px; padding: 13px 16px; border-radius: 24px;
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+  }
+  .content { flex: 1; overflow-y: auto; padding: 18px 20px 24px; }
+  .group-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .group-label:first-child { margin-top: 4px; }
+  .ch-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
+  .ch-row a { font-size: 15px; font-weight: 600; }
+  .ch-row .count { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+  .feed { display: flex; flex-direction: column; gap: 12px; }
+  .post-top { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .post-who { margin-left: auto; font-size: 11.5px; color: var(--ink-faint); }
+  .post-body { margin: 0; font-size: 14px; line-height: 1.6; }
+  mark { background: var(--accent-2-soft); color: var(--ink); border-radius: 3px; padding: 0 1px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
+    <h1>검색</h1>
+  </div>
+  <div class="search-bar">
+    <input id="q" type="search" placeholder="채널 이름이나 이야기 내용으로 검색" autofocus>
+  </div>
+  <div class="content">
+    <div id="results"><div class="empty-state"><p>궁금한 질병이나 키워드를 입력해보세요.</p></div></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js?v=2"></script>
+<script src="js/firebase-init.js?v=2"></script>
+<script src="js/auth.js?v=2"></script>
+<script src="js/data.js?v=5"></script>
+<script>
+  function escapeHtml(s) {
+    return (s || "").replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function highlight(text, q) {
+    var safe = escapeHtml(text);
+    if (!q) return safe;
+    var idx = safe.toLowerCase().indexOf(q.toLowerCase());
+    if (idx === -1) return safe;
+    return safe.slice(0, idx) + "<mark>" + safe.slice(idx, idx + q.length) + "</mark>" + safe.slice(idx + q.length);
+  }
+
+  var allChannels = [];
+  var allPosts = [];
+  var blockedUsers = {};
+
+  function render(query) {
+    var el = document.getElementById("results");
+    var q = query.trim();
+    if (!q) { el.innerHTML = '<div class="empty-state"><p>궁금한 질병이나 키워드를 입력해보세요.</p></div>'; return; }
+
+    var matchedChannels = allChannels.filter(function (c) { return c.name.toLowerCase().indexOf(q.toLowerCase()) !== -1; });
+    var matchedPosts = window.LWI.filterBlocked(
+      allPosts.filter(function (p) {
+        return (p.body || "").toLowerCase().indexOf(q.toLowerCase()) !== -1 ||
+               (p.channelName || "").toLowerCase().indexOf(q.toLowerCase()) !== -1;
+      }),
+      blockedUsers
+    );
+
+    if (!matchedChannels.length && !matchedPosts.length) {
+      el.innerHTML = '<div class="empty-state"><p>"' + escapeHtml(q) + '"에 대한 결과가 없어요.</p></div>';
+      return;
+    }
+
+    var html = "";
+    if (matchedChannels.length) {
+      html += '<div class="group-label">채널 ' + matchedChannels.length + '</div>';
+      matchedChannels.forEach(function (c) {
+        html += '<div class="ch-row"><a href="channel.html?id=' + c.id + '">' + highlight(c.name, q) + '</a><span class="count">' + (c.memberCount || 0) + '명</span></div>';
+      });
+    }
+    if (matchedPosts.length) {
+      html += '<div class="group-label">이야기 ' + matchedPosts.length + '</div><div class="feed">';
+      matchedPosts.slice(0, 40).forEach(function (p) {
+        html +=
+          '<div class="card">' +
+            '<div class="post-top">' +
+              '<span class="tag">' + escapeHtml(p.channelName || "") + '</span>' +
+              '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + (p.kind === "evidence" ? "근거자료" : "경험담") + '</span>' +
+              '<span class="post-who">' + escapeHtml(p.authorNickname || "익명") + '</span>' +
+            '</div>' +
+            '<p class="post-body"><a href="post.html?id=' + p.id + '" style="color:inherit;">' + highlight((p.body || "").slice(0, 100), q) + '</a></p>' +
+          '</div>';
+      });
+      html += "</div>";
+    }
+    el.innerHTML = html;
+  }
+
+  window.LWI.requireAuth(function (user, profile) {
+    if (!window.LWI.isConfigured) return;
+    blockedUsers = profile.blockedUsers || {};
+
+    Promise.all([window.LWI.listChannels("main"), window.LWI.listChannels("sub")]).then(function (results) {
+      allChannels = (results[0].length ? results[0] : window.LWI.FALLBACK_MAIN_CHANNELS).concat(results[1]);
+    });
+    window.LWI.listPosts({ limitN: 200 }).then(function (posts) { allPosts = posts; });
+
+    var input = document.getElementById("q");
+    var timer = null;
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      timer = setTimeout(function () { render(input.value); }, 150);
+    });
+  });
+</script>
+</body>
+</html>
