@@ -1,0 +1,560 @@
+<title>유병장수(LWI) 기획안</title>
+<style>
+  :root {
+    --bg: #EDEAE1;
+    --surface: #F8F6EF;
+    --surface-2: #E3DFD2;
+    --ink: #2B2620;
+    --ink-soft: #6E6656;
+    --ink-faint: #A39C89;
+    --accent: #7A3B48;
+    --accent-soft: #C99AA4;
+    --accent-2: #5E6E4E;
+    --accent-2-soft: #B9C4A8;
+    --line: rgba(43, 38, 32, 0.14);
+    --line-strong: rgba(43, 38, 32, 0.28);
+    --shadow: 0 1px 2px rgba(43, 38, 32, 0.06);
+    --serif: Iowan Old Style, "Noto Serif KR", Georgia, "Apple SD Gothic Neo", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1B1915;
+      --surface: #232019;
+      --surface-2: #2C281F;
+      --ink: #ECE7D9;
+      --ink-soft: #B0A891;
+      --ink-faint: #756D5A;
+      --accent: #E39BA8;
+      --accent-soft: #6B4048;
+      --accent-2: #9BB081;
+      --accent-2-soft: #45503A;
+      --line: rgba(236, 231, 217, 0.14);
+      --line-strong: rgba(236, 231, 217, 0.26);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1B1915;
+    --surface: #232019;
+    --surface-2: #2C281F;
+    --ink: #ECE7D9;
+    --ink-soft: #B0A891;
+    --ink-faint: #756D5A;
+    --accent: #E39BA8;
+    --accent-soft: #6B4048;
+    --accent-2: #9BB081;
+    --accent-2-soft: #45503A;
+    --line: rgba(236, 231, 217, 0.14);
+    --line-strong: rgba(236, 231, 217, 0.26);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  }
+  :root[data-theme="light"] {
+    --bg: #EDEAE1;
+    --surface: #F8F6EF;
+    --surface-2: #E3DFD2;
+    --ink: #2B2620;
+    --ink-soft: #6E6656;
+    --ink-faint: #A39C89;
+    --accent: #7A3B48;
+    --accent-soft: #C99AA4;
+    --accent-2: #5E6E4E;
+    --accent-2-soft: #B9C4A8;
+    --line: rgba(43, 38, 32, 0.14);
+    --line-strong: rgba(43, 38, 32, 0.28);
+    --shadow: 0 1px 2px rgba(43, 38, 32, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); }
+
+  .doc {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 24px 96px;
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.7;
+  }
+
+  .doc :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* ---------- Header ---------- */
+  .masthead {
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    flex: none;
+  }
+  h1.title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(32px, 5vw, 44px);
+    line-height: 1.15;
+    margin: 0 0 6px;
+    text-wrap: balance;
+    letter-spacing: -0.01em;
+  }
+  .title .en {
+    display: block;
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    margin-top: 10px;
+    font-weight: 400;
+  }
+  .title .en-sub {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    letter-spacing: 0;
+    color: var(--accent);
+    margin-top: 8px;
+    font-weight: 400;
+  }
+  .tagline {
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin: 14px 0 0;
+    max-width: 46em;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin-top: 20px;
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    font-family: var(--mono);
+  }
+  .meta-row span b { color: var(--ink-soft); font-weight: 600; }
+
+  /* ---------- At-a-glance card ---------- */
+  .glance {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    padding: 4px 0;
+    margin-bottom: 48px;
+    overflow-x: auto;
+  }
+  .glance dl {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    margin: 0;
+  }
+  .glance div.row {
+    display: contents;
+  }
+  .glance dt {
+    padding: 14px 20px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border-top: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .glance dd {
+    margin: 0;
+    padding: 14px 20px 14px 0;
+    border-top: 1px solid var(--line);
+    font-size: 15px;
+  }
+  .glance div.row:first-child dt,
+  .glance div.row:first-child dd { border-top: none; }
+
+  /* ---------- Section rhythm ---------- */
+  section.block { margin-bottom: 52px; }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .sec-head .idx {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+  }
+  h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  h3 {
+    font-family: var(--sans);
+    font-weight: 700;
+    font-size: 14.5px;
+    margin: 28px 0 10px;
+    color: var(--ink);
+  }
+  p { margin: 0 0 14px; color: var(--ink); max-width: 62em; }
+  .lede { font-size: 16.5px; color: var(--ink-soft); max-width: 58em; }
+  strong { color: var(--ink); font-weight: 700; }
+  .soft { color: var(--ink-soft); }
+
+  /* ---------- Persona callout ---------- */
+  .persona {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .persona .badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+    white-space: nowrap;
+    padding-top: 2px;
+  }
+  .persona p { margin: 0; font-size: 15px; }
+  .persona .tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: var(--accent-2-soft);
+    color: var(--accent-2);
+  }
+  :root[data-theme="dark"] .tag, @media (prefers-color-scheme: dark) { }
+
+  /* ---------- Feature list ---------- */
+  .features { display: grid; gap: 14px; }
+  .feature {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 14px;
+    padding: 16px 0;
+    border-top: 1px solid var(--line);
+  }
+  .feature:first-child { border-top: none; padding-top: 0; }
+  .feature .mark {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--accent);
+    line-height: 1.4;
+  }
+  .feature h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: var(--sans);
+  }
+  .feature p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+
+  /* ---------- Comparison table ---------- */
+  .tbl-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 480px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+  td.hi { color: var(--accent); font-weight: 600; }
+
+  /* ---------- Risk list ---------- */
+  .risks { display: grid; gap: 10px; }
+  .risk {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+  .risk .level {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    padding-top: 1px;
+  }
+  .risk p { margin: 0; font-size: 14px; color: var(--ink-soft); }
+  .risk p strong { color: var(--ink); }
+
+  /* ---------- Roadmap timeline ---------- */
+  .roadmap { position: relative; padding-left: 28px; }
+  .roadmap::before {
+    content: "";
+    position: absolute;
+    left: 6px; top: 6px; bottom: 6px;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .phase { position: relative; padding-bottom: 30px; }
+  .phase:last-child { padding-bottom: 0; }
+  .phase::before {
+    content: "";
+    position: absolute;
+    left: -28px; top: 4px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+  }
+  .phase .ph-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .phase .ph-name {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .phase .ph-time {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+  .phase p { font-size: 14.5px; color: var(--ink-soft); margin: 0; }
+
+  /* ---------- Action list ---------- */
+  .actions { display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .action {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14.5px;
+  }
+  .action .box {
+    width: 15px; height: 15px;
+    border: 1.5px solid var(--line-strong);
+    border-radius: 3px;
+    margin-top: 2px;
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-family: var(--mono);
+  }
+
+  @media (max-width: 560px) {
+    .doc { padding: 40px 18px 72px; }
+    .glance dl { grid-template-columns: 96px 1fr; }
+    .persona { grid-template-columns: 1fr; }
+    .persona .badge { padding-top: 0; }
+  }
+</style>
+
+<article class="doc">
+  <header class="masthead">
+    <div class="eyebrow"><span class="dot"></span>서비스 기획안 · 초안 v0.1</div>
+    <h1 class="title">유병장수
+      <span class="en">LIVING WELL WITH ILLNESS — LWI</span>
+      <span class="en-sub">Longevity, redefined — one well-lived day at a time.</span>
+    </h1>
+    <p class="tagline">병을 안고도 오래, 그리고 편하게 사는 법을 함께 나누는 사람들을 위한 커뮤니티</p>
+    <div class="meta-row">
+      <span>작성일 <b>2026-07-23</b></span>
+      <span>작성자 <b>hyunminant</b></span>
+      <span>단계 <b>컨셉 정의</b></span>
+    </div>
+  </header>
+
+  <div class="glance">
+    <dl>
+      <div class="row"><dt>한글명</dt><dd>유병장수(有病長壽)</dd></div>
+      <div class="row"><dt>영문명</dt><dd>Living Well with Illness (LWI)</dd></div>
+      <div class="row"><dt>한 줄 정의</dt><dd>누구나 질병을 안고 살아갑니다. 서로의 경험과 치료 정보를 공감하는 커뮤니티 앱</dd></div>
+      <div class="row"><dt>타겟</dt><dd>가벼운 질병부터 만성질환까지, 마음을 열고 사람들과 얘기할 수 있는 공간이 필요한 모든 사람</dd></div>
+      <div class="row"><dt>카테고리</dt><dd>헬스케어 · 커뮤니티 · 정보공유</dd></div>
+      <div class="row"><dt>플랫폼</dt><dd>스마트폰 전용 (iOS·Android 네이티브 앱, 웹 버전 없음)</dd></div>
+    </dl>
+  </div>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">01</span><h2>왜 필요한가</h2></div>
+    <p class="lede">유병장수(有病長壽) — 질병을 앓으면서도 오래도록 삶을 유지한다는 뜻의 사자성어. 지금 한국 사회의 많은 성인이 실제로 이렇게 살고 있다. 완치가 아니라 <strong>관리</strong>가 목표인 병을 몇 년, 길게는 몇십 년씩 데리고 살아간다.</p>
+    <p>문제는 이런 병들이 "말하기 애매한" 병이라는 점이다. 암처럼 주변의 걱정을 받지도, 감기처럼 금방 낫지도 않는다. 고혈압·당뇨·탈모·비염 같은 병은 일상 대화에서 잘 꺼내지지 않고, 꺼내더라도 "약 잘 챙겨 먹어"라는 말로 대화가 끝나버린다. 정작 필요한 건 <strong>같은 병을 오래 겪어본 사람의 진짜 경험</strong>인데, 그걸 편하게 나눌 곳이 마땅치 않다.</p>
+    <div class="persona">
+      <div class="badge">계기</div>
+      <div>
+        <p>작성자 본인이 고혈압·당뇨병을 10년째 관리 중이며, 탈모와 만성 비염도 함께 겪고 있다. 병원 처방은 받고 있지만, 약 이외에 일상에서 시도해볼 수 있는 자연적인 방법이나 다른 사람들의 실제 경험은 어디서도 정리된 정보를 찾기 어려웠다.</p>
+        <div class="tags"><span class="tag">고혈압 10년차</span><span class="tag">당뇨 10년차</span><span class="tag">탈모</span><span class="tag">만성비염</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">02</span><h2>지향점</h2></div>
+    <p>유병장수는 <strong>병원 치료를 대체하지 않는다.</strong> 대신 병원 치료 사이의 빈틈 — 매일의 관리, 감정적 부담, 생활 속 시도 — 을 다른 유병자들의 목소리로 채운다.</p>
+    <div class="features">
+      <div class="feature">
+        <div class="mark">共</div>
+        <div><h4>터놓고 말할 수 있는 곳</h4><p>진단명과 증상을 숨기지 않아도 되는, 같은 처지의 사람들만 모인 공간을 만든다.</p></div>
+      </div>
+      <div class="feature">
+        <div class="mark">知</div>
+        <div><h4>축적되는 경험 정보</h4><p>한 번의 게시글로 끝나지 않고, 질병별로 쌓여서 다음 사람이 검색해서 찾아볼 수 있는 정보가 된다.</p></div>
+      </div>
+      <div class="feature">
+        <div class="mark">選</div>
+        <div><h4>선택지를 넓히는 정보</h4><p>약물 치료를 전제로 하되, 식습관·생활습관 등 자연적으로 시도해볼 수 있는 방법도 균형 있게 다룬다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">03</span><h2>핵심 기능</h2></div>
+    <h3>커뮤니티</h3>
+    <div class="features">
+      <div class="feature">
+        <div class="mark">1</div>
+        <div><h4>질병별 채널</h4><p>질병 단위로 채널이 나뉘고, 한 사람이 여러 채널에 동시에 속할 수 있다. (본인처럼 두 가지 이상의 병을 함께 겪는 경우가 많기 때문) "가벼운 질병부터 만성질환까지" 넓은 타겟을 감당하기 위해 메인 채널과 서브 채널로 이원화한다 — 아래 표 참고.</p></div>
+      </div>
+      <div class="feature">
+        <div class="mark">2</div>
+        <div><h4>익명 옵션</h4><p>닉네임 기본, 실명 비공개. 가입 시 이메일 인증은 필수로 거쳐 어뷰징·중복 계정을 막되, 인증된 이메일은 프로필을 포함해 어떤 화면에도 노출되지 않는다. 민감한 건강 정보이므로 글쓴이가 원하는 만큼만 자신을 드러낼 수 있게 한다.</p></div>
+      </div>
+      <div class="feature">
+        <div class="mark">3</div>
+        <div><h4>공감 반응</h4><p>단순 '좋아요'가 아니라 "저도 그래요" "저는 이렇게 해봤어요" 같은, 질병 공감 맥락에 맞춘 반응 방식.</p></div>
+      </div>
+    </div>
+    <h3>채널 구조 — 메인 채널 · 서브 채널 이원화</h3>
+    <p>큐레이션된 소수 채널만 두면 신뢰·운영은 쉽지만 "가벼운 질병부터 만성질환까지" 넓은 타겟을 담지 못한다. 반대로 완전 개방형으로 두면 확장은 되지만 채널이 파편화되고 품질 관리가 어렵다. 유병장수는 두 구조를 층으로 나눠 절충한다.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>구분</th><th>메인 채널</th><th>서브 채널</th></tr></thead>
+        <tbody>
+          <tr><td>개설 기준</td><td>운영진 큐레이션</td><td>사용자가 직접 태그 생성</td></tr>
+          <tr><td>초기 목록 근거</td><td class="hi">KOSIS 건강보험통계 다빈도 상병 데이터 기준 진료인원 상위 질환</td><td>—</td></tr>
+          <tr><td>운영 방식</td><td>운영진 상시 모더레이션, 출처·근거 표시 적용</td><td>신고 기반 경량 모더레이션</td></tr>
+          <tr><td>다음 단계</td><td>—</td><td>활성 사용자 수 일정 기준 초과 시 메인 채널로 승격 검토</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="soft">메인 채널 초기 목록은 "감(느낌)"이 아니라 실제 진료 빈도 데이터로 정한다 — 07번 다음 액션 참고.</p>
+    <h3>정보 아카이브</h3>
+    <div class="features">
+      <div class="feature">
+        <div class="mark">4</div>
+        <div><h4>경험 기반 아카이브</h4><p>게시글 중 도움이 됐다는 반응이 쌓인 내용은 질병별 "함께 시도해본 것들" 목록으로 정리되어 검색 가능해진다.</p></div>
+      </div>
+      <div class="feature">
+        <div class="mark">5</div>
+        <div><h4>출처·근거 표시</h4><p>개인 경험담과, 근거가 있는 정보(논문·기관 자료 인용)를 시각적으로 구분해 표시한다. 정보의 신뢰도를 사용자가 스스로 판단할 수 있게 돕는다.</p></div>
+      </div>
+      <div class="feature">
+        <div class="mark">6</div>
+        <div><h4>병원 치료 병행 안내</h4><p>모든 정보 하단에 "이 방법은 병원 치료를 대체하지 않습니다"라는 안내를 고정 노출한다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">04</span><h2>기존 대안과의 차이</h2></div>
+    <p class="lede">비슷한 목적의 서비스는 이미 존재한다. 다만 각각 한 가지씩 부족하다.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>서비스 유형</th><th>강점</th><th>아쉬운 점</th></tr></thead>
+        <tbody>
+          <tr><td>네이버 카페 / 밴드</td><td>정보량, 오래된 커뮤니티</td><td>질병별로 흩어져 있고 검색·신뢰도 구분이 없음</td></tr>
+          <tr><td>병원 · 제약사 앱</td><td>의학적 신뢰도</td><td>일방향 정보 전달, 공감·경험 공유가 없음</td></tr>
+          <tr><td>일반 헬스케어 앱</td><td>기록·관리 기능</td><td>혼자 쓰는 도구에 가깝고 사람 간 교류가 약함</td></tr>
+          <tr><td class="hi">유병장수(LWI)</td><td class="hi">공감 커뮤니티 + 검증 가능한 정보 아카이브</td><td class="hi">— 이 조합을 목표로 함</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">05</span><h2>유의해야 할 리스크</h2></div>
+    <div class="risks">
+      <div class="risk"><div class="level">법률</div><p><strong>의료광고·건강기능식품 관련 법규</strong> — 자연 치료법을 다루는 콘텐츠가 의학적 효능을 단정하는 표현으로 흐르지 않도록 검수 기준이 필요하다. 서비스 출시 전 관련 법률 자문 확인 필요.</p></div>
+      <div class="risk"><div class="level">신뢰성</div><p><strong>잘못된 정보 확산</strong> — 개인 경험담이 검증되지 않은 채 퍼질 위험. 경험담과 근거 자료를 구분 표시하는 장치(04 참고)가 핵심 방어선.</p></div>
+      <div class="risk"><div class="level">개인정보</div><p><strong>민감정보 보호</strong> — 질병 정보는 개인정보보호법상 민감정보에 해당. 암호화, 접근 권한, 탈퇴 시 삭제 정책을 초기 설계 단계부터 반영해야 한다.</p></div>
+      <div class="risk"><div class="level">신뢰도</div><p><strong>과장·조작 후기 방지</strong> — 특정 제품·시술 홍보 목적의 후기가 유입될 가능성. 초기부터 신고·모더레이션 체계 설계.</p></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">06</span><h2>로드맵</h2></div>
+    <div class="roadmap">
+      <div class="phase">
+        <div class="ph-head"><span class="ph-name">0단계 · 검증</span><span class="ph-time">~4주</span></div>
+        <p>고혈압·당뇨·탈모·비염 등 소수 질병 채널로 좁혀, 오프라인 설문·인터뷰로 "터놓고 말할 곳이 없다"는 문제가 실제인지 검증한다.</p>
+      </div>
+      <div class="phase">
+        <div class="ph-head"><span class="ph-name">1단계 · MVP</span><span class="ph-time">2~3개월</span></div>
+        <p>질병 채널, 익명 게시·댓글, 공감 반응까지만 구현한 최소 커뮤니티. 정보 아카이브·근거 표시는 제외하고 순수 커뮤니티 반응부터 확인한다.</p>
+      </div>
+      <div class="phase">
+        <div class="ph-head"><span class="ph-name">2단계 · 아카이브</span><span class="ph-time">MVP 이후</span></div>
+        <p>반응이 좋은 게시글을 질병별 아카이브로 정리하는 기능과 출처 구분 표시를 추가한다.</p>
+      </div>
+      <div class="phase">
+        <div class="ph-head"><span class="ph-name">3단계 · 확장</span><span class="ph-time">추후</span></div>
+        <p>채널 확대, 전문가(한의사·영양사 등) 검수 콘텐츠 도입 여부를 검토한다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-head"><span class="idx">07</span><h2>다음 액션</h2></div>
+    <div class="actions">
+      <div class="action"><div class="box"></div><div>KOSIS 건강보험통계 다빈도 상병 데이터에서 메인 채널 후보 목록 확보 (진료인원 상위권 + 본인 사례 고혈압·당뇨·탈모·비염 포함)</div></div>
+      <div class="action"><div class="box"></div><div>메인 채널 승격 기준(서브 채널 활성 사용자 수 등) 구체적 수치 확정</div></div>
+      <div class="action"><div class="box"></div><div>0단계 검증을 위한 간단한 설문/인터뷰 질문지 작성</div></div>
+      <div class="action"><div class="box"></div><div>의료광고법·개인정보보호법 관련 자문처 확인</div></div>
+      <div class="action"><div class="box"></div><div>MVP 화면 흐름(와이어프레임) 초안 작성</div></div>
+    </div>
+  </section>
+
+  <footer>유병장수(LWI) · 기획안 초안 · 이후 수정 반영 예정</footer>
+</article>

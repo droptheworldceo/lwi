@@ -1,0 +1,601 @@
+<title>유병장수 · 메인 화면</title>
+<style>
+  :root {
+    --stage: #F1DFD9;
+    --stage-2: #E7CBC1;
+    --screen: #FDF3EF;
+    --surface: #FFFFFF;
+    --surface-2: #F8E4DC;
+    --ink: #3A2620;
+    --ink-soft: #8C6D63;
+    --ink-faint: #BC9C90;
+    --accent: #D9718A;
+    --accent-ink: #FFF6F5;
+    --accent-soft: #F8DEE2;
+    --accent-2: #BC8642;
+    --accent-2-soft: #F1E2C9;
+    --pop: #C65B4E;
+    --pop-soft: #F5DBD3;
+    --line: rgba(58, 38, 32, 0.10);
+    --line-strong: rgba(58, 38, 32, 0.22);
+    --bezel: #241713;
+    --serif: "Iowan Old Style", "Noto Serif KR", Georgia, "Apple SD Gothic Neo", serif;
+    --sans: "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --stage: #1A1210;
+      --stage-2: #241714;
+      --screen: #241713;
+      --surface: #2E1E1A;
+      --surface-2: #3A2620;
+      --ink: #F5E7E1;
+      --ink-soft: #C9A99D;
+      --ink-faint: #8C6E63;
+      --accent: #F0A0AF;
+      --accent-ink: #3A1C22;
+      --accent-soft: #452A2E;
+      --accent-2: #E0B26C;
+      --accent-2-soft: #43331F;
+      --pop: #F0977D;
+      --pop-soft: #402A22;
+      --line: rgba(245, 231, 225, 0.10);
+      --line-strong: rgba(245, 231, 225, 0.22);
+      --bezel: #050302;
+    }
+  }
+  :root[data-theme="dark"] {
+    --stage: #1A1210; --stage-2: #241714; --screen: #241713; --surface: #2E1E1A; --surface-2: #3A2620;
+    --ink: #F5E7E1; --ink-soft: #C9A99D; --ink-faint: #8C6E63;
+    --accent: #F0A0AF; --accent-ink: #3A1C22; --accent-soft: #452A2E;
+    --accent-2: #E0B26C; --accent-2-soft: #43331F;
+    --pop: #F0977D; --pop-soft: #402A22;
+    --line: rgba(245, 231, 225, 0.10); --line-strong: rgba(245, 231, 225, 0.22); --bezel: #050302;
+  }
+  :root[data-theme="light"] {
+    --stage: #F1DFD9; --stage-2: #E7CBC1; --screen: #FDF3EF; --surface: #FFFFFF; --surface-2: #F8E4DC;
+    --ink: #3A2620; --ink-soft: #8C6D63; --ink-faint: #BC9C90;
+    --accent: #D9718A; --accent-ink: #FFF6F5; --accent-soft: #F8DEE2;
+    --accent-2: #BC8642; --accent-2-soft: #F1E2C9;
+    --pop: #C65B4E; --pop-soft: #F5DBD3;
+    --line: rgba(58, 38, 32, 0.10); --line-strong: rgba(58, 38, 32, 0.22); --bezel: #241713;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: radial-gradient(ellipse at 50% -10%, var(--stage-2), var(--stage) 65%);
+    min-height: 100vh;
+  }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding: 56px 20px 64px;
+    font-family: var(--sans);
+    color: var(--ink);
+  }
+
+  .stage-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .stage-label .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .stage-label b { color: var(--ink); font-weight: 700; letter-spacing: 0.02em; }
+
+  /* ---------- Phone frame ---------- */
+  .phone {
+    width: 388px;
+    max-width: 90vw;
+    background: var(--bezel);
+    border-radius: 52px;
+    padding: 14px;
+    box-shadow: 0 30px 60px -20px rgba(20, 16, 10, 0.45), 0 2px 0 rgba(255,255,255,0.03) inset;
+  }
+  .screen {
+    position: relative;
+    background: var(--screen);
+    border-radius: 38px;
+    height: 820px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+  }
+  .screen::-webkit-scrollbar { display: none; }
+
+  .statusbar {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 30px 6px;
+    background: var(--screen);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .statusbar .icons { display: flex; align-items: center; gap: 6px; }
+  .island {
+    position: absolute;
+    top: 12px; left: 50%; transform: translateX(-50%);
+    width: 108px; height: 30px;
+    background: var(--bezel);
+    border-radius: 16px;
+    z-index: 6;
+  }
+
+  .content { padding: 6px 22px 28px; }
+
+  /* ---------- Header ---------- */
+  header.greet {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin: 12px 0 22px;
+  }
+  .brand-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 9px;
+  }
+  .brand-eyebrow .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+  header.greet h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 23px;
+    line-height: 1.4;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  header.greet h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+  header.greet .hello {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  header.greet .hello .date {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    color: var(--ink-faint);
+  }
+  header.greet .hello .sep { color: var(--line-strong); }
+  header.greet .hello b { color: var(--ink); font-weight: 700; }
+  .avatar {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    border: 1px solid var(--line-strong);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    font-family: var(--serif);
+    font-size: 15px;
+    flex: none;
+  }
+
+  /* ---------- Check-in card ---------- */
+  .checkin {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    padding: 20px 20px 18px;
+    margin-bottom: 22px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  }
+  .checkin-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .checkin-top p { margin: 0; font-size: 14.5px; font-weight: 700; color: var(--ink); }
+  .streak {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--pop);
+    background: var(--pop-soft);
+    padding: 4px 9px;
+    border-radius: 20px;
+  }
+  .streak svg { width: 10px; height: 10px; }
+
+  .wave-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .wave-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .wave-btn .bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 2.5px;
+    height: 34px;
+  }
+  .wave-btn .bars i {
+    width: 4px;
+    border-radius: 2px;
+    background: var(--line-strong);
+    display: block;
+  }
+  .wave-btn.active .bars i { background: var(--accent); }
+  .wave-btn span {
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+  .wave-btn.active span { color: var(--accent); font-weight: 700; }
+
+  /* ---------- Channel chips ---------- */
+  .section-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 0 0 12px;
+  }
+  .section-label h2 {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0;
+    color: var(--ink);
+  }
+  .section-label a {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+  .chips {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 26px;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none;
+    font-size: 13px;
+    padding: 9px 15px;
+    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .chip.on {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    font-weight: 600;
+  }
+  .chip.add {
+    color: var(--ink-faint);
+    border-style: dashed;
+  }
+
+  /* ---------- Hero post ---------- */
+  .hero-post {
+    position: relative;
+    background: linear-gradient(155deg, var(--accent) 0%, #9C4A5F 100%);
+    border-radius: 22px;
+    padding: 22px 22px 20px;
+    color: var(--accent-ink);
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .hero-post::after {
+    content: "";
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(251,242,243,0.72);
+    margin-bottom: 12px;
+  }
+  .hero-post h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 19px;
+    line-height: 1.4;
+    margin: 0 0 12px;
+    text-wrap: balance;
+    position: relative;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+  .hero-meta .who {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: rgba(251,242,243,0.85);
+  }
+  .hero-meta .who .tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pop); }
+  .empathy {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 12px;
+    background: rgba(255,255,255,0.14);
+    padding: 5px 10px;
+    border-radius: 20px;
+  }
+  .empathy svg { width: 12px; height: 12px; }
+
+  /* ---------- Feed ---------- */
+  .feed { display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; }
+  .post {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px 17px;
+  }
+  .post-top {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    color: var(--ink-soft);
+  }
+  .kind {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .kind.exp { background: var(--accent-soft); color: var(--accent); }
+  .kind.evi { background: var(--accent-2-soft); color: var(--accent-2); }
+  .kind svg { width: 8px; height: 8px; }
+  .post-who {
+    margin-left: auto;
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+  .post p.body {
+    margin: 0 0 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+  .post-foot {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+  .post-foot span { display: flex; align-items: center; gap: 4px; }
+  .post-foot svg { width: 12px; height: 12px; }
+
+  /* ---------- Tab bar ---------- */
+  .tabbar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 12px 10px 26px;
+    background: var(--screen);
+    border-top: 1px solid var(--line);
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--ink-faint);
+  }
+  .tab svg { width: 22px; height: 22px; }
+  .tab span { font-size: 10.5px; }
+  .tab.on { color: var(--accent); }
+  .tab.on svg { fill: var(--accent); }
+
+  @media (max-width: 460px) {
+    .stage { padding: 36px 12px 48px; }
+    .phone { padding: 10px; border-radius: 42px; }
+    .screen { height: 78vh; border-radius: 30px; }
+  }
+</style>
+
+<div class="stage">
+  <div class="stage-label"><span class="dot"></span><b>유병장수 · LWI</b> — 메인 화면 시안 v0.1</div>
+
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="icons">
+          <svg viewBox="0 0 18 12" width="18" height="12" fill="none"><rect x="0" y="7" width="3" height="5" rx="0.5" fill="currentColor"/><rect x="4.5" y="5" width="3" height="7" rx="0.5" fill="currentColor"/><rect x="9" y="3" width="3" height="9" rx="0.5" fill="currentColor"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 12" width="22" height="11" fill="none"><rect x="0.5" y="0.5" width="20" height="11" rx="2.5" stroke="currentColor"/><rect x="2" y="2" width="16" height="8" rx="1.3" fill="currentColor"/><rect x="21.5" y="4" width="1.6" height="4" rx="0.8" fill="currentColor"/></svg>
+        </span>
+      </div>
+
+      <div class="content">
+        <header class="greet">
+          <div>
+            <div class="brand-eyebrow"><span class="dot"></span>유병장수 · LWI</div>
+            <h1>병을 갖고도<br><em>장수</em>를 꿈꾸는</h1>
+            <p class="hello"><span class="date">7월 24일 금요일</span><span class="sep">·</span>안녕하세요, <b>고요한하루</b>님</p>
+          </div>
+          <div class="avatar">고</div>
+        </header>
+
+        <div class="checkin">
+          <div class="checkin-top">
+            <p>오늘 컨디션은 어떠세요?</p>
+            <div class="streak">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 3 14h6l-1 8 10-13h-6z"/></svg>
+              7일째 기록 중
+            </div>
+          </div>
+          <div class="wave-row">
+            <div class="wave-btn">
+              <div class="bars"><i style="height:6px"></i><i style="height:10px"></i><i style="height:6px"></i></div>
+              <span>힘듦</span>
+            </div>
+            <div class="wave-btn">
+              <div class="bars"><i style="height:10px"></i><i style="height:16px"></i><i style="height:10px"></i></div>
+              <span>피곤</span>
+            </div>
+            <div class="wave-btn active">
+              <div class="bars"><i style="height:16px"></i><i style="height:26px"></i><i style="height:16px"></i></div>
+              <span>보통</span>
+            </div>
+            <div class="wave-btn">
+              <div class="bars"><i style="height:22px"></i><i style="height:34px"></i><i style="height:22px"></i></div>
+              <span>좋음</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label"><h2>내 채널</h2><a>편집</a></div>
+        <div class="chips">
+          <span class="chip on">고혈압</span>
+          <span class="chip on">당뇨</span>
+          <span class="chip on">탈모</span>
+          <span class="chip on">비염</span>
+          <span class="chip add">+ 채널 추가</span>
+        </div>
+
+        <div class="hero-post">
+          <div class="hero-eyebrow">
+            <span class="tag-dot" style="width:5px;height:5px;border-radius:50%;background:var(--pop);display:inline-block"></span>
+            오늘 가장 공감받은 이야기 · 고혈압
+          </div>
+          <h3>약을 먹은 지 10년, 숫자보다 잠을 먼저 챙기고 나서 달라진 것들</h3>
+          <div class="hero-meta">
+            <div class="who"><span class="tag-dot"></span>느긋한바람 · 3시간 전</div>
+            <div class="empathy">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>
+              공감 132
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label"><h2>새로운 이야기</h2><a>더보기</a></div>
+        <div class="feed">
+          <div class="post">
+            <div class="post-top">
+              <span class="tag">당뇨</span>
+              <span class="kind exp"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>경험담</span>
+              <span class="post-who">맑은아침</span>
+            </div>
+            <p class="body">저녁 탄수화물을 줄이고부터 아침 공복 수치가 눈에 띄게 안정됐어요. 대신 저녁이 좀 허전하긴 합니다...</p>
+            <div class="post-foot">
+              <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>공감 58</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>댓글 12</span>
+            </div>
+          </div>
+
+          <div class="post">
+            <div class="post-top">
+              <span class="tag">탈모</span>
+              <span class="kind evi"><svg viewBox="0 0 8 8" fill="currentColor"><rect width="8" height="8" rx="1.5"/></svg>근거자료</span>
+              <span class="post-who">피부과 전문의 칼럼</span>
+            </div>
+            <p class="body">스트레스성 탈모와 유전성 탈모는 관리 방법이 다릅니다. 두 가지를 구분하는 세 가지 신호를 정리했어요.</p>
+            <div class="post-foot">
+              <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>공감 96</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>댓글 24</span>
+            </div>
+          </div>
+
+          <div class="post">
+            <div class="post-top">
+              <span class="tag">비염</span>
+              <span class="kind exp"><svg viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>경험담</span>
+              <span class="post-who">코숨쉬기</span>
+            </div>
+            <p class="body">환절기마다 콧물 때문에 잠을 설쳤는데, 잠들기 전 코 세척을 루틴으로 만들고 나서 확실히 편해졌어요.</p>
+            <div class="post-foot">
+              <span><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>공감 41</span>
+              <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>댓글 7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="tabbar">
+        <div class="tab on">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
+          <span>홈</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
+          <span>커뮤니티</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg>
+          <span>아카이브</span>
+        </div>
+        <div class="tab">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+          <span>나</span>
+        </div>
+      </nav>
+    </div>
+  </div>
+</div>
