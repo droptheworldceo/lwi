@@ -22,7 +22,11 @@ service cloud.firestore {
       allow create: if isVerified()
         && request.resource.data.authorUid == request.auth.uid
         && request.resource.data.kind in ['experience', 'evidence'];
-      allow update, delete: if isVerified() && resource.data.authorUid == request.auth.uid;
+      allow update: if isVerified() && (
+        resource.data.authorUid == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['empathyCount', 'commentCount'])
+      );
+      allow delete: if isVerified() && resource.data.authorUid == request.auth.uid;
 
       match /reactions/{uid} {
         allow read: if true;
