@@ -51,7 +51,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=3"></script>
+<script src="js/data.js?v=4"></script>
 <script>
   var params = new URLSearchParams(window.location.search);
   var channelId = params.get("id");
@@ -103,7 +103,9 @@
       document.getElementById("channel-count").textContent = (data.memberCount || 0) + "명 참여 중";
     });
 
-    window.LWI.listPosts({ channelId: channelId, limitN: 30 }).then(renderFeed);
+    window.LWI.listPosts({ channelId: channelId, limitN: 30 }).then(function (posts) {
+      return window.LWI.filterBlocked(posts, profile.blockedUsers);
+    }).then(renderFeed);
 
     document.getElementById("feed").addEventListener("click", function (e) {
       var btn = e.target.closest("button[data-like]");

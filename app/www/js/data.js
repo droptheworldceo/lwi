@@ -14,6 +14,7 @@ window.LWI.createUserProfile = function (uid, nickname) {
   return window.LWI.db.collection("users").doc(uid).set({
     nickname: nickname,
     joinedChannels: [],
+    blockedUsers: {},
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 };
@@ -118,6 +119,43 @@ window.LWI.addComment = function (postId, comment) {
 
 window.LWI.updateNickname = function (uid, nickname) {
   return window.LWI.db.collection("users").doc(uid).update({ nickname: nickname });
+};
+
+// 신고: reports 컬렉션에 기록만 남긴다 (검토는 운영진이 콘솔에서 수행 — 관리자 화면은 추후 작업).
+window.LWI.REPORT_REASONS = [
+  { code: "spam", label: "스팸·광고" },
+  { code: "abuse", label: "욕설·혐오 표현" },
+  { code: "misinfo", label: "잘못된 의료정보" },
+  { code: "privacy", label: "개인정보 노출" },
+  { code: "etc", label: "기타" }
+];
+
+window.LWI.reportContent = function (report) {
+  return window.LWI.db.collection("reports").add(Object.assign({}, report, {
+    status: "pending",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }));
+};
+
+// 차단: users/{uid}.blockedUsers는 { [상대uid]: 닉네임 } 맵으로 저장한다.
+// (배열 대신 맵을 쓰는 이유: 다른 사용자의 프로필 문서는 읽기 권한이 없어서,
+//  마이페이지에서 차단 목록에 닉네임을 보여주려면 차단 시점에 같이 저장해둬야 함)
+// 차단된 사용자의 글/댓글은 피드·댓글 렌더링 시 클라이언트에서 걸러낸다.
+window.LWI.blockUser = function (uid, blockedUid, blockedNickname) {
+  var update = {};
+  update["blockedUsers." + blockedUid] = blockedNickname || "익명";
+  return window.LWI.db.collection("users").doc(uid).update(update);
+};
+
+window.LWI.unblockUser = function (uid, blockedUid) {
+  var update = {};
+  update["blockedUsers." + blockedUid] = firebase.firestore.FieldValue.delete();
+  return window.LWI.db.collection("users").doc(uid).update(update);
+};
+
+window.LWI.filterBlocked = function (list, blockedUsers) {
+  if (!blockedUsers || !Object.keys(blockedUsers).length) return list;
+  return list.filter(function (item) { return !blockedUsers[item.authorUid]; });
 };
 
 // authorUid where + createdAt orderBy도 복합 색인이 필요해 listPosts와 같은 방식으로 처리.

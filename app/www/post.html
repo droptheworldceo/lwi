@@ -21,7 +21,9 @@
   .empathy-btn svg { width: 16px; height: 16px; }
   .comments-label { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
   .comment { padding: 12px 0; border-top: 1px solid var(--line); }
-  .comment .who { font-size: 12px; font-weight: 700; color: var(--ink-soft); margin-bottom: 4px; }
+  .comment .who-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .comment .who { font-size: 12px; font-weight: 700; color: var(--ink-soft); }
+  .comment .report-link { font-size: 11px; color: var(--ink-faint); background: none; border: none; cursor: pointer; padding: 0; }
   .comment .body { font-size: 14px; line-height: 1.6; }
   .comment-form { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; display: flex; gap: 8px; padding: 12px 20px calc(env(safe-area-inset-bottom, 0) + 12px); background: var(--surface); border-top: 1px solid var(--line); }
   .comment-form input { flex: 1; font-size: 14px; padding: 12px 14px; border-radius: 20px; border: 1px solid var(--line-strong); background: var(--bg); }
@@ -39,6 +41,7 @@
       <div class="post-top">
         <span class="kind" id="post-kind"></span>
         <span class="post-who" id="post-who"></span>
+        <button class="kebab-btn" id="post-kebab" aria-label="더보기"></button>
       </div>
       <p class="post-body" id="post-body"></p>
       <div class="source-note" id="source-note" style="display:none;"></div>
@@ -68,20 +71,27 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=3"></script>
+<script src="js/data.js?v=4"></script>
+<script src="js/ui.js?v=1"></script>
 <script>
   var params = new URLSearchParams(window.location.search);
   var postId = params.get("id");
+  var currentUid = null;
+  var blockedUsers = {};
 
   function renderComments(list) {
     var el = document.getElementById("comments");
+    list = window.LWI.filterBlocked(list, blockedUsers);
     document.getElementById("comment-count").textContent = list.length;
     if (!list.length) { el.innerHTML = '<div class="empty-state"><p>아직 댓글이 없어요.</p></div>'; return; }
     el.innerHTML = "";
     list.forEach(function (c) {
       var div = document.createElement("div");
       div.className = "comment";
-      div.innerHTML = '<div class="who">' + (c.authorNickname || "익명") + '</div><div class="body"></div>';
+      div.innerHTML =
+        '<div class="who-row"><span class="who">' + (c.authorNickname || "익명") + '</span>' +
+        (c.authorUid === currentUid ? "" : '<button class="report-link" data-report-comment="' + c.id + '" data-author="' + c.authorUid + '" data-author-name="' + (c.authorNickname || "익명") + '">신고</button>') +
+        '</div><div class="body"></div>';
       div.querySelector(".body").textContent = c.body;
       el.appendChild(div);
     });
@@ -91,6 +101,26 @@
     if (!postId) { window.location.href = "home.html"; return; }
     if (!window.LWI.isConfigured) return;
     var uid = user.uid;
+    currentUid = uid;
+    blockedUsers = profile.blockedUsers || {};
+
+    document.getElementById("comments").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-report-comment]");
+      if (!btn) return;
+      window.LWI.openReportBlockSheet({
+        targetType: "comment",
+        targetId: btn.dataset.reportComment,
+        postId: postId,
+        authorUid: btn.dataset.author,
+        authorNickname: btn.dataset.authorName,
+        reporterUid: uid,
+        isOwn: false,
+        onBlocked: function () {
+          blockedUsers[btn.dataset.author] = btn.dataset.authorName;
+          window.LWI.listComments(postId).then(renderComments);
+        }
+      });
+    });
 
     window.LWI.getPost(postId).then(function (post) {
       if (!post) return;
@@ -106,6 +136,22 @@
         sn.style.display = "block";
         sn.textContent = "출처: " + post.sourceNote;
       }
+
+      var isOwnPost = post.authorUid === uid;
+      var kebabBtn = document.getElementById("post-kebab");
+      kebabBtn.innerHTML = window.LWI.kebabIconHtml();
+      kebabBtn.addEventListener("click", function () {
+        window.LWI.openReportBlockSheet({
+          targetType: "post",
+          targetId: postId,
+          postId: postId,
+          authorUid: post.authorUid,
+          authorNickname: post.authorNickname,
+          reporterUid: uid,
+          isOwn: isOwnPost,
+          onBlocked: function () { window.location.href = "home.html"; }
+        });
+      });
 
       var empathyBtn = document.getElementById("empathy-btn");
       var empathyCountEl = document.getElementById("empathy-count");

@@ -28,6 +28,9 @@
   .my-post a { font-size: 14px; line-height: 1.6; display: block; }
   .my-post .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
 
+  .blocked-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .blocked-item button { font-size: 12px; font-weight: 700; color: var(--accent-deep); background: none; border: none; cursor: pointer; }
+
   .signout { margin-top: 30px; }
 </style>
 </head>
@@ -61,6 +64,9 @@
     <div class="group-label">내가 쓴 이야기</div>
     <div id="my-posts"><div class="empty-state"><p>불러오는 중...</p></div></div>
 
+    <div class="group-label">차단한 사용자</div>
+    <div id="blocked-list"><div class="empty-state"><p>차단한 사용자가 없어요.</p></div></div>
+
     <div class="signout">
       <button class="btn btn-ghost" id="signout-btn">로그아웃</button>
     </div>
@@ -92,7 +98,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=3"></script>
+<script src="js/data.js?v=4"></script>
 <script>
   window.LWI.requireAuth(function (user, profile) {
     if (!window.LWI.isConfigured) return;
@@ -155,6 +161,30 @@
           '<div class="meta">' + (p.channelName || "") + ' · 공감 ' + (p.empathyCount || 0) + '</div>';
         div.querySelector("a").textContent = (p.body || "").slice(0, 60);
         el.appendChild(div);
+      });
+    });
+
+    function renderBlocked() {
+      var blocked = profile.blockedUsers || {};
+      var el = document.getElementById("blocked-list");
+      var uids = Object.keys(blocked);
+      if (!uids.length) { el.innerHTML = '<div class="empty-state"><p>차단한 사용자가 없어요.</p></div>'; return; }
+      el.innerHTML = "";
+      uids.forEach(function (blockedUid) {
+        var row = document.createElement("div");
+        row.className = "blocked-item";
+        row.innerHTML = '<span></span><button data-unblock="' + blockedUid + '">차단 해제</button>';
+        row.querySelector("span").textContent = blocked[blockedUid];
+        el.appendChild(row);
+      });
+    }
+    renderBlocked();
+    document.getElementById("blocked-list").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-unblock]");
+      if (!btn) return;
+      window.LWI.unblockUser(uid, btn.dataset.unblock).then(function () {
+        delete profile.blockedUsers[btn.dataset.unblock];
+        renderBlocked();
       });
     });
 

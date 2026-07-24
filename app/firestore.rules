@@ -43,5 +43,12 @@ service cloud.firestore {
         allow update, delete: if isVerified() && resource.data.authorUid == request.auth.uid;
       }
     }
+
+    // 신고: 신고자 본인만 자신이 낸 신고를 만들고 읽을 수 있다.
+    // 검토(모더레이션)는 별도 운영자 화면이 생기기 전까지 콘솔에서 수동 확인.
+    match /reports/{reportId} {
+      allow create: if isVerified() && request.resource.data.reporterUid == request.auth.uid;
+      allow read: if isSignedIn() && resource.data.reporterUid == request.auth.uid;
+    }
   }
 }
