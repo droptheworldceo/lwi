@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 나</title>
+<link rel="stylesheet" href="css/lwi.css">
+<style>
+  .content { flex: 1; overflow-y: auto; padding: 20px 20px 24px; }
+  .avatar-row { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent-ink); color: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 18px; flex: none; }
+  .name-edit { display: flex; align-items: center; gap: 8px; }
+  .name-edit input { font-family: var(--serif); font-size: 18px; font-weight: 600; border: none; background: none; color: var(--ink); padding: 2px 0; border-bottom: 1px solid transparent; }
+  .name-edit input:focus { border-bottom-color: var(--accent); outline: none; }
+  .name-edit .save { font-size: 11.5px; color: var(--accent-deep); cursor: pointer; display: none; }
+  .email-line { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+
+  .stat-row { display: flex; gap: 10px; margin-bottom: 26px; }
+  .stat { flex: 1; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px; text-align: center; }
+  .stat .n { font-family: var(--serif); font-size: 20px; color: var(--accent-deep); }
+  .stat .l { font-size: 11.5px; color: var(--ink-faint); margin-top: 4px; }
+
+  .group-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); margin: 4px 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .my-channels { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .my-channels a { font-size: 13px; padding: 8px 14px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); }
+
+  .my-post { padding: 12px 0; border-top: 1px solid var(--line); }
+  .my-post a { font-size: 14px; line-height: 1.6; display: block; }
+  .my-post .meta { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); margin-top: 4px; }
+
+  .signout { margin-top: 30px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
+    <h1>마이페이지</h1>
+  </div>
+  <div class="content">
+    <div class="avatar-row">
+      <div class="avatar" id="avatar-letter">-</div>
+      <div>
+        <div class="name-edit">
+          <input id="nickname-input" type="text" maxlength="12">
+          <span class="save" id="save-nickname">저장</span>
+        </div>
+        <div class="email-line" id="email-line">-</div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="n" id="stat-checkins">-</div><div class="l">기록 일수</div></div>
+      <div class="stat"><div class="n" id="stat-posts">-</div><div class="l">쓴 이야기</div></div>
+      <div class="stat"><div class="n" id="stat-channels">-</div><div class="l">참여 채널</div></div>
+    </div>
+
+    <div class="group-label">참여 중인 채널</div>
+    <div class="my-channels" id="my-channels"><span class="tag">불러오는 중...</span></div>
+
+    <div class="group-label">내가 쓴 이야기</div>
+    <div id="my-posts"><div class="empty-state"><p>불러오는 중...</p></div></div>
+
+    <div class="signout">
+      <button class="btn btn-ghost" id="signout-btn">로그아웃</button>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <a class="tab" href="home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
+      <span>홈</span>
+    </a>
+    <a class="tab" href="channels.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
+      <span>커뮤니티</span>
+    </a>
+    <a class="tab" href="write.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+      <span>글쓰기</span>
+    </a>
+    <a class="tab on" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+      <span>나</span>
+    </a>
+  </nav>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script>
+  window.LWI.requireAuth(function (user, profile) {
+    if (!window.LWI.isConfigured) return;
+    var uid = user.uid;
+
+    document.getElementById("avatar-letter").textContent = profile.nickname.charAt(0);
+    document.getElementById("nickname-input").value = profile.nickname;
+    document.getElementById("email-line").textContent = user.email;
+
+    var input = document.getElementById("nickname-input");
+    var saveEl = document.getElementById("save-nickname");
+    var original = profile.nickname;
+    input.addEventListener("input", function () {
+      saveEl.style.display = input.value.trim() !== original && input.value.trim().length >= 2 ? "inline" : "none";
+    });
+    saveEl.addEventListener("click", function () {
+      var next = input.value.trim();
+      window.LWI.updateNickname(uid, next).then(function () {
+        original = next;
+        saveEl.style.display = "none";
+        document.getElementById("avatar-letter").textContent = next.charAt(0);
+      });
+    });
+
+    window.LWI.getCheckinCount(uid).then(function (n) {
+      document.getElementById("stat-checkins").textContent = n;
+    });
+
+    var joined = profile.joinedChannels || [];
+    document.getElementById("stat-channels").textContent = joined.length;
+    var chEl = document.getElementById("my-channels");
+    if (!joined.length) {
+      chEl.innerHTML = '<a href="channels.html">아직 참여한 채널이 없어요 · 둘러보기</a>';
+    } else {
+      chEl.innerHTML = "";
+      Promise.all(joined.map(function (id) {
+        return window.LWI.db.collection("channels").doc(id).get();
+      })).then(function (docs) {
+        docs.forEach(function (d) {
+          if (!d.exists) return;
+          var a = document.createElement("a");
+          a.href = "channel.html?id=" + d.id;
+          a.textContent = d.data().name;
+          chEl.appendChild(a);
+        });
+        if (!chEl.children.length) chEl.innerHTML = '<a href="channels.html">아직 참여한 채널이 없어요 · 둘러보기</a>';
+      });
+    }
+
+    window.LWI.listMyPosts(uid).then(function (posts) {
+      document.getElementById("stat-posts").textContent = posts.length;
+      var el = document.getElementById("my-posts");
+      if (!posts.length) { el.innerHTML = '<div class="empty-state"><p>아직 쓴 이야기가 없어요.</p></div>'; return; }
+      el.innerHTML = "";
+      posts.forEach(function (p) {
+        var div = document.createElement("div");
+        div.className = "my-post";
+        div.innerHTML =
+          '<a href="post.html?id=' + p.id + '"></a>' +
+          '<div class="meta">' + (p.channelName || "") + ' · 공감 ' + (p.empathyCount || 0) + '</div>';
+        div.querySelector("a").textContent = (p.body || "").slice(0, 60);
+        el.appendChild(div);
+      });
+    });
+
+    document.getElementById("signout-btn").addEventListener("click", function () {
+      window.LWI.signOut();
+    });
+  });
+</script>
+</body>
+</html>

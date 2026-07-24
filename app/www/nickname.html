@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 닉네임 설정</title>
+<link rel="stylesheet" href="css/lwi.css">
+<style>
+  .center { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 28px 24px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 21px; margin: 0 0 8px; }
+  p.desc { font-size: 14px; color: var(--ink-soft); margin: 0 0 28px; line-height: 1.7; }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin: -8px 0 20px; }
+  .suggestions button {
+    font-size: 12.5px; padding: 7px 13px; border-radius: 18px; border: 1px dashed var(--line-strong);
+    background: none; color: var(--ink-faint); cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="center">
+    <h1>어떤 이름으로<br>활동하시겠어요?</h1>
+    <p class="desc">실명 대신 쓸 닉네임이에요. 언제든 마이페이지에서 바꿀 수 있어요.</p>
+    <div class="suggestions" id="suggestions"></div>
+    <div class="field">
+      <label for="nickname">닉네임</label>
+      <input id="nickname" type="text" maxlength="12" placeholder="예: 고요한하루" required>
+      <div class="error" id="err-nickname"></div>
+    </div>
+    <button class="btn btn-primary" id="submit-btn">시작하기</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script>
+  var picks = ["고요한하루", "느긋한바람", "맑은아침", "코숨쉬기", "천천히걷기"];
+  var suggestionsEl = document.getElementById("suggestions");
+  var input = document.getElementById("nickname");
+  picks.forEach(function (name) {
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = name;
+    b.addEventListener("click", function () { input.value = name; });
+    suggestionsEl.appendChild(b);
+  });
+
+  var currentUser = null;
+  if (window.LWI.isConfigured) {
+    window.LWI.auth.onAuthStateChanged(function (user) {
+      if (!user) { window.location.href = "signup.html"; return; }
+      currentUser = user;
+    });
+  }
+
+  document.getElementById("submit-btn").addEventListener("click", function () {
+    var field = input.closest(".field");
+    field.classList.remove("has-error");
+    var nickname = input.value.trim();
+
+    if (nickname.length < 2) {
+      field.classList.add("has-error");
+      document.getElementById("err-nickname").textContent = "2자 이상 입력해주세요.";
+      return;
+    }
+    if (!window.LWI.isConfigured || !currentUser) {
+      field.classList.add("has-error");
+      document.getElementById("err-nickname").textContent = "Firebase 설정이 아직 연결되지 않았습니다.";
+      return;
+    }
+    window.LWI.createUserProfile(currentUser.uid, nickname).then(function () {
+      window.location.href = "home.html";
+    }).catch(function (err) {
+      field.classList.add("has-error");
+      document.getElementById("err-nickname").textContent = err.message || "문제가 발생했어요.";
+    });
+  });
+</script>
+</body>
+</html>

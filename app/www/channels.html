@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 채널</title>
+<link rel="stylesheet" href="css/lwi.css">
+<style>
+  .content { flex: 1; overflow-y: auto; padding: 16px 20px 24px; }
+  .group-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); margin: 22px 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .group-label:first-child { margin-top: 4px; }
+  .ch-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
+  .ch-row a { font-size: 15px; font-weight: 600; flex: 1; }
+  .ch-row .count { font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); margin-right: 10px; }
+  .ch-row button { font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 16px; border: 1px solid var(--line-strong); background: none; color: var(--ink-soft); cursor: pointer; }
+  .ch-row button.joined { background: var(--accent-ink); border-color: var(--accent); color: var(--accent-deep); }
+  .new-channel { margin-top: 26px; padding: 16px; border: 1px dashed var(--line-strong); border-radius: 14px; }
+  .new-channel .row { display: flex; gap: 8px; }
+  .new-channel input { flex: 1; font-size: 14px; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); }
+  .new-channel button { flex: none; }
+  .new-channel p { font-size: 12px; color: var(--ink-faint); margin: 10px 0 0; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
+    <h1>채널</h1>
+  </div>
+  <div class="content">
+    <div class="group-label">메인 채널</div>
+    <div id="main-channels"><div class="empty-state"><p>불러오는 중...</p></div></div>
+
+    <div class="group-label">서브 채널</div>
+    <div id="sub-channels"><div class="empty-state"><p>아직 없어요.</p></div></div>
+
+    <div class="new-channel">
+      <div class="row">
+        <input id="new-name" type="text" maxlength="16" placeholder="원하는 질병 이름으로 채널 만들기">
+        <button class="btn btn-primary" style="width:auto;" id="new-btn">만들기</button>
+      </div>
+      <p>참여자가 많아지면 메인 채널로 승격될 수 있어요.</p>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <a class="tab" href="home.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
+      <span>홈</span>
+    </a>
+    <a class="tab on" href="channels.html">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
+      <span>커뮤니티</span>
+    </a>
+    <a class="tab" href="write.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+      <span>글쓰기</span>
+    </a>
+    <a class="tab" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+      <span>나</span>
+    </a>
+  </nav>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script>
+  function renderList(el, channels, joined, uid) {
+    if (!channels.length) { el.innerHTML = '<div class="empty-state"><p>아직 없어요.</p></div>'; return; }
+    el.innerHTML = "";
+    channels.forEach(function (c) {
+      var row = document.createElement("div");
+      row.className = "ch-row";
+      var isJoined = joined.indexOf(c.id) !== -1;
+      row.innerHTML =
+        '<a href="channel.html?id=' + c.id + '">' + c.name + '</a>' +
+        '<span class="count">' + (c.memberCount || 0) + '명</span>' +
+        '<button data-join="' + c.id + '" class="' + (isJoined ? "joined" : "") + '">' + (isJoined ? "참여중" : "참여하기") + '</button>';
+      el.appendChild(row);
+    });
+    el.querySelectorAll("button[data-join]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (!uid) return;
+        window.LWI.joinChannel(uid, btn.dataset.join).then(function () {
+          btn.textContent = "참여중";
+          btn.classList.add("joined");
+        });
+      });
+    });
+  }
+
+  window.LWI.requireAuth(function (user, profile) {
+    var uid = user ? user.uid : null;
+    var joined = (profile && profile.joinedChannels) || [];
+
+    if (!window.LWI.isConfigured) {
+      renderList(document.getElementById("main-channels"), window.LWI.FALLBACK_MAIN_CHANNELS, []);
+      return;
+    }
+
+    Promise.all([window.LWI.listChannels("main"), window.LWI.listChannels("sub")]).then(function (results) {
+      var mains = results[0].length ? results[0] : window.LWI.FALLBACK_MAIN_CHANNELS;
+      renderList(document.getElementById("main-channels"), mains, joined, uid);
+      renderList(document.getElementById("sub-channels"), results[1], joined, uid);
+    });
+
+    document.getElementById("new-btn").addEventListener("click", function () {
+      var input = document.getElementById("new-name");
+      var name = input.value.trim();
+      if (!name) return;
+      window.LWI.createChannel(name, "sub").then(function (ref) {
+        return window.LWI.joinChannel(uid, ref.id);
+      }).then(function () {
+        window.location.reload();
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 시작하기</title>
+<link rel="stylesheet" href="css/lwi.css">
+<style>
+  .hero-copy { padding: 48px 24px 8px; text-align: center; }
+  .hero-copy .mark { font-family: var(--serif); font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .hero-copy .mark em { font-style: normal; color: var(--accent); }
+  .hero-copy p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+  .tabs { display: flex; gap: 6px; margin: 28px 20px 20px; background: var(--surface-2); border-radius: 12px; padding: 4px; }
+  .tabs button {
+    flex: 1; padding: 10px; border: none; border-radius: 9px; background: none;
+    font-size: 14px; font-weight: 700; color: var(--ink-soft); cursor: pointer;
+  }
+  .tabs button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  form { padding: 0 20px; }
+  .privacy-note {
+    margin: 0 20px 20px; font-size: 12px; color: var(--ink-faint); line-height: 1.7;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hero-copy">
+    <div class="mark">유병장수 <em>· LWI</em></div>
+    <p>누구나 질병을 안고 살아갑니다. 서로의 경험을 나누는 공감 커뮤니티</p>
+  </div>
+
+  <div class="tabs">
+    <button type="button" id="tab-signup" class="on">가입하기</button>
+    <button type="button" id="tab-login">로그인</button>
+  </div>
+
+  <form id="auth-form">
+    <div class="field">
+      <label for="email">이메일</label>
+      <input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+      <div class="error" id="err-email"></div>
+    </div>
+    <div class="field">
+      <label for="password">비밀번호</label>
+      <input id="password" type="password" autocomplete="new-password" required minlength="8" placeholder="8자 이상">
+      <div class="error" id="err-password"></div>
+    </div>
+    <button type="submit" class="btn btn-primary" id="submit-btn">가입하기</button>
+  </form>
+
+  <p class="privacy-note" id="privacy-note">
+    가입 시 이메일 인증이 필요합니다. 인증된 이메일은 어뷰징 방지 목적에만 쓰이며,
+    닉네임을 포함해 프로필의 어떤 화면에도 공개되지 않습니다.
+  </p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+  var mode = "signup";
+  var tabSignup = document.getElementById("tab-signup");
+  var tabLogin = document.getElementById("tab-login");
+  var submitBtn = document.getElementById("submit-btn");
+  var privacyNote = document.getElementById("privacy-note");
+
+  function setMode(next) {
+    mode = next;
+    tabSignup.classList.toggle("on", mode === "signup");
+    tabLogin.classList.toggle("on", mode === "login");
+    submitBtn.textContent = mode === "signup" ? "가입하기" : "로그인";
+    privacyNote.style.display = mode === "signup" ? "block" : "none";
+  }
+  tabSignup.addEventListener("click", function () { setMode("signup"); });
+  tabLogin.addEventListener("click", function () { setMode("login"); });
+
+  function showError(fieldId, message) {
+    var field = document.getElementById(fieldId).closest(".field");
+    field.classList.add("has-error");
+    document.getElementById("err-" + fieldId).textContent = message;
+  }
+  function clearErrors() {
+    document.querySelectorAll(".field").forEach(function (f) { f.classList.remove("has-error"); });
+  }
+
+  document.getElementById("auth-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearErrors();
+
+    if (!window.LWI.isConfigured) {
+      showError("email", "Firebase 설정이 아직 연결되지 않았습니다.");
+      return;
+    }
+
+    var email = document.getElementById("email").value.trim();
+    var password = document.getElementById("password").value;
+    submitBtn.disabled = true;
+
+    var action = mode === "signup"
+      ? window.LWI.auth.createUserWithEmailAndPassword(email, password).then(function (cred) {
+          return cred.user.sendEmailVerification().then(function () {
+            window.location.href = "verify.html";
+          });
+        })
+      : window.LWI.auth.signInWithEmailAndPassword(email, password).then(function () {
+          window.location.href = "index.html";
+        });
+
+    action.catch(function (err) {
+      submitBtn.disabled = false;
+      if (err.code === "auth/email-already-in-use") showError("email", "이미 가입된 이메일이에요. 로그인 탭을 이용해주세요.");
+      else if (err.code === "auth/weak-password") showError("password", "비밀번호가 너무 짧아요. 8자 이상 입력해주세요.");
+      else if (err.code === "auth/invalid-email") showError("email", "이메일 형식을 확인해주세요.");
+      else if (err.code === "auth/wrong-password" || err.code === "auth/user-not-found") showError("password", "이메일 또는 비밀번호가 일치하지 않아요.");
+      else showError("email", err.message || "문제가 발생했어요. 잠시 후 다시 시도해주세요.");
+    });
+  });
+</script>
+</body>
+</html>

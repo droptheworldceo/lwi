@@ -1,0 +1,8 @@
+{
+  "appId": "com.droptheworldceo.lwi",
+  "appName": "유병장수",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

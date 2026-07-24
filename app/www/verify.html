@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 이메일 인증</title>
+<link rel="stylesheet" href="css/lwi.css">
+<style>
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 28px; text-align: center; }
+  .icon-wrap { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-ink); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; color: var(--accent); }
+  .icon-wrap svg { width: 30px; height: 30px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 20px; margin: 0 0 10px; }
+  .email { font-family: var(--mono); font-size: 13px; color: var(--accent-deep); margin-bottom: 6px; }
+  p.desc { font-size: 14px; color: var(--ink-soft); line-height: 1.7; max-width: 30em; margin: 0 0 28px; }
+  .actions { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+  .status { font-size: 12.5px; color: var(--ink-faint); margin-top: 14px; min-height: 16px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="center">
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/></svg>
+    </div>
+    <h1>이메일 인증이 필요해요</h1>
+    <div class="email" id="user-email">-</div>
+    <p class="desc">위 주소로 인증 메일을 보냈어요. 메일함(스팸함 포함)에서 링크를 눌러 인증을 완료해주세요. 인증한 이메일은 어디에도 공개되지 않아요.</p>
+    <div class="actions">
+      <button class="btn btn-primary" id="check-btn">인증 완료했어요, 확인하기</button>
+      <button class="btn btn-ghost" id="resend-btn">인증 메일 다시 보내기</button>
+      <button class="btn btn-text" id="signout-btn">다른 계정으로 시작하기</button>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  var statusEl = document.getElementById("status");
+
+  if (window.LWI.isConfigured) {
+    window.LWI.auth.onAuthStateChanged(function (user) {
+      if (!user) { window.location.href = "signup.html"; return; }
+      document.getElementById("user-email").textContent = user.email;
+    });
+  }
+
+  document.getElementById("check-btn").addEventListener("click", function () {
+    var user = window.LWI.auth.currentUser;
+    if (!user) return;
+    statusEl.textContent = "확인 중...";
+    user.reload().then(function () {
+      if (user.emailVerified) {
+        window.location.href = "index.html";
+      } else {
+        statusEl.textContent = "아직 인증되지 않았어요. 메일함을 확인해주세요.";
+      }
+    });
+  });
+
+  document.getElementById("resend-btn").addEventListener("click", function () {
+    var user = window.LWI.auth.currentUser;
+    if (!user) return;
+    statusEl.textContent = "전송 중...";
+    user.sendEmailVerification().then(function () {
+      statusEl.textContent = "다시 보냈어요. 잠시 후 메일함을 확인해주세요.";
+    }).catch(function (err) {
+      statusEl.textContent = err.message || "전송에 실패했어요.";
+    });
+  });
+
+  document.getElementById("signout-btn").addEventListener("click", function () {
+    window.LWI.signOut();
+  });
+</script>
+</body>
+</html>

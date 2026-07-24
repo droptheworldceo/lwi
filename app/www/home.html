@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 홈</title>
+<link rel="stylesheet" href="css/lwi.css">
+<style>
+  .content { flex: 1; overflow-y: auto; padding: 18px 20px 24px; }
+  .greet { margin-bottom: 20px; }
+  .greet .brand-eyebrow { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  .greet h2 { font-family: var(--serif); font-weight: 500; font-size: 20px; margin: 0 0 8px; line-height: 1.4; }
+  .greet h2 em { font-style: normal; color: var(--accent); }
+  .greet .hello { font-size: 12.5px; color: var(--ink-soft); }
+  .greet .hello b { color: var(--ink); }
+
+  .checkin { margin-bottom: 22px; }
+  .checkin-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .checkin-top p { margin: 0; font-size: 14px; font-weight: 700; }
+  .streak { font-family: var(--mono); font-size: 11px; color: var(--accent-deep); background: var(--accent-ink); padding: 4px 9px; border-radius: 20px; }
+  .mood-row { display: flex; gap: 8px; }
+  .mood-btn { flex: 1; padding: 12px 4px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; color: var(--ink-soft); cursor: pointer; }
+  .mood-btn.on { border-color: var(--accent); color: var(--accent-deep); background: var(--accent-ink); font-weight: 700; }
+
+  .section-label { display: flex; align-items: baseline; justify-content: space-between; margin: 0 0 12px; }
+  .section-label h3 { font-size: 13px; font-weight: 700; margin: 0; }
+  .section-label a { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 26px; }
+  .chip-link { flex: none; font-size: 13px; padding: 9px 15px; border-radius: 20px; background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); white-space: nowrap; }
+  .chip-link.joined { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+
+  .feed { display: flex; flex-direction: column; gap: 12px; }
+  .post-top { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .post-who { margin-left: auto; font-size: 11.5px; color: var(--ink-faint); }
+  .post-body { margin: 0 0 10px; font-size: 14px; line-height: 1.6; }
+  .post-foot { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+  .post-foot button { background: none; border: none; padding: 0; display: flex; align-items: center; gap: 4px; color: inherit; font: inherit; cursor: pointer; }
+  .post-foot button.liked { color: var(--accent-deep); font-weight: 700; }
+  .post-foot svg { width: 12px; height: 12px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <h1>유병장수 <span style="color:var(--accent-deep)">· LWI</span></h1>
+    <a class="action" href="profile.html">나</a>
+  </div>
+
+  <div class="content">
+    <div class="greet">
+      <div class="brand-eyebrow">유병장수 · LWI</div>
+      <h2>병을 갖고도<br><em>장수</em>를 꿈꾸는</h2>
+      <p class="hello">안녕하세요, <b id="hello-nickname">-</b>님</p>
+    </div>
+
+    <div class="card checkin">
+      <div class="checkin-top">
+        <p>오늘 컨디션은 어떠세요?</p>
+        <span class="streak" id="checkin-count">- 일째 기록 중</span>
+      </div>
+      <div class="mood-row" id="mood-row">
+        <button class="mood-btn" data-mood="힘듦">힘듦</button>
+        <button class="mood-btn" data-mood="피곤">피곤</button>
+        <button class="mood-btn" data-mood="보통">보통</button>
+        <button class="mood-btn" data-mood="좋음">좋음</button>
+      </div>
+    </div>
+
+    <div class="section-label"><h3>내 채널</h3><a href="channels.html">전체보기</a></div>
+    <div class="chips" id="channel-chips"><span class="chip-link">불러오는 중...</span></div>
+
+    <div class="section-label"><h3>새로운 이야기</h3><a href="channels.html">더보기</a></div>
+    <div class="feed" id="feed"><div class="empty-state"><p>불러오는 중...</p></div></div>
+  </div>
+
+  <nav class="tabbar">
+    <a class="tab on" href="home.html">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
+      <span>홈</span>
+    </a>
+    <a class="tab" href="channels.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
+      <span>커뮤니티</span>
+    </a>
+    <a class="tab" href="write.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+      <span>글쓰기</span>
+    </a>
+    <a class="tab" href="profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
+      <span>나</span>
+    </a>
+  </nav>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script>
+  function heartIcon() {
+    return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>';
+  }
+  function commentIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>';
+  }
+
+  function renderChannels(channels, joined) {
+    var el = document.getElementById("channel-chips");
+    el.innerHTML = "";
+    channels.forEach(function (c) {
+      var a = document.createElement("a");
+      a.href = "channel.html?id=" + encodeURIComponent(c.id);
+      a.className = "chip-link" + (joined.indexOf(c.id) !== -1 ? " joined" : "");
+      a.textContent = c.name;
+      el.appendChild(a);
+    });
+    var add = document.createElement("a");
+    add.href = "channels.html";
+    add.className = "chip-link";
+    add.textContent = "+ 채널 추가";
+    el.appendChild(add);
+  }
+
+  function renderFeed(posts) {
+    var el = document.getElementById("feed");
+    if (!posts.length) {
+      el.innerHTML = '<div class="empty-state"><p>아직 등록된 이야기가 없어요. 첫 이야기를 남겨보세요.</p></div>';
+      return;
+    }
+    el.innerHTML = "";
+    posts.forEach(function (p) {
+      var div = document.createElement("div");
+      div.className = "card";
+      div.innerHTML =
+        '<div class="post-top">' +
+          '<span class="tag">' + (p.channelName || "") + '</span>' +
+          '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + (p.kind === "evidence" ? "근거자료" : "경험담") + '</span>' +
+          '<span class="post-who">' + (p.authorNickname || "익명") + '</span>' +
+        '</div>' +
+        '<p class="post-body"><a href="post.html?id=' + p.id + '" style="color:inherit;">' + (p.body || "").slice(0, 90) + '</a></p>' +
+        '<div class="post-foot">' +
+          '<button data-like="' + p.id + '">' + heartIcon() + '<span>' + (p.empathyCount || 0) + '</span></button>' +
+          '<a href="post.html?id=' + p.id + '" style="display:flex;align-items:center;gap:4px;">' + commentIcon() + '<span>' + (p.commentCount || 0) + '</span></a>' +
+        '</div>';
+      el.appendChild(div);
+    });
+  }
+
+  window.LWI.requireAuth(function (user, profile) {
+    if (!user) {
+      // Firebase 미설정 상태 — 데모용 정적 표시
+      document.getElementById("hello-nickname").textContent = "고요한하루";
+      document.getElementById("checkin-count").textContent = "- 일째 기록 중";
+      renderChannels(window.LWI.FALLBACK_MAIN_CHANNELS, []);
+      renderFeed([]);
+      return;
+    }
+
+    document.getElementById("hello-nickname").textContent = profile.nickname;
+
+    window.LWI.getTodayCheckin(user.uid).then(function (checkin) {
+      if (checkin) {
+        document.querySelectorAll(".mood-btn").forEach(function (btn) {
+          btn.classList.toggle("on", btn.dataset.mood === checkin.mood);
+        });
+      }
+    });
+    window.LWI.getCheckinCount(user.uid).then(function (n) {
+      document.getElementById("checkin-count").textContent = n + "일째 기록 중";
+    });
+    document.querySelectorAll(".mood-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        document.querySelectorAll(".mood-btn").forEach(function (b) { b.classList.remove("on"); });
+        btn.classList.add("on");
+        window.LWI.saveCheckin(user.uid, btn.dataset.mood).then(function () {
+          return window.LWI.getCheckinCount(user.uid);
+        }).then(function (n) {
+          document.getElementById("checkin-count").textContent = n + "일째 기록 중";
+        });
+      });
+    });
+
+    window.LWI.listChannels("main").then(function (channels) {
+      renderChannels(channels.length ? channels : window.LWI.FALLBACK_MAIN_CHANNELS, profile.joinedChannels || []);
+    });
+
+    window.LWI.listPosts({ limitN: 20 }).then(renderFeed);
+
+    document.getElementById("feed").addEventListener("click", function (e) {
+      var btn = e.target.closest("button[data-like]");
+      if (!btn) return;
+      var postId = btn.dataset.like;
+      window.LWI.toggleEmpathy(postId, user.uid).then(function (liked) {
+        var countEl = btn.querySelector("span");
+        var n = parseInt(countEl.textContent, 10) || 0;
+        countEl.textContent = liked ? n + 1 : Math.max(0, n - 1);
+        btn.classList.toggle("liked", liked);
+      });
+    });
+  });
+</script>
+</body>
+</html>
