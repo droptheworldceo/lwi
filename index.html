@@ -1,0 +1,614 @@
+<title>유병장수 · Living Well with Illness</title>
+<style>
+  :root {
+    --page: #FDF6F2;
+    --surface: #FFFFFF;
+    --surface-2: #F8E1D8;
+    --ink: #33211C;
+    --ink-soft: #8C6D63;
+    --ink-faint: #BFA398;
+    --accent: #D9718A;
+    --accent-deep: #9C4A5F;
+    --accent-ink: #FFF6F5;
+    --accent-2: #BC8642;
+    --accent-2-soft: #F1E2C9;
+    --line: rgba(51, 33, 28, 0.10);
+    --line-strong: rgba(51, 33, 28, 0.20);
+    --serif: "Iowan Old Style", "Noto Serif KR", Georgia, "Apple SD Gothic Neo", serif;
+    --sans: "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #1A1210;
+      --surface: #241713;
+      --surface-2: #2E1E1A;
+      --ink: #F5E7E1;
+      --ink-soft: #C9A99D;
+      --ink-faint: #8C6E63;
+      --accent: #EFA3B1;
+      --accent-deep: #C56E80;
+      --accent-ink: #3A1C22;
+      --accent-2: #E0B26C;
+      --accent-2-soft: #43331F;
+      --line: rgba(245, 231, 225, 0.10);
+      --line-strong: rgba(245, 231, 225, 0.22);
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #1A1210; --surface: #241713; --surface-2: #2E1E1A;
+    --ink: #F5E7E1; --ink-soft: #C9A99D; --ink-faint: #8C6E63;
+    --accent: #EFA3B1; --accent-deep: #C56E80; --accent-ink: #3A1C22;
+    --accent-2: #E0B26C; --accent-2-soft: #43331F;
+    --line: rgba(245, 231, 225, 0.10); --line-strong: rgba(245, 231, 225, 0.22);
+  }
+  :root[data-theme="light"] {
+    --page: #FDF6F2; --surface: #FFFFFF; --surface-2: #F8E1D8;
+    --ink: #33211C; --ink-soft: #8C6D63; --ink-faint: #BFA398;
+    --accent: #D9718A; --accent-deep: #9C4A5F; --accent-ink: #FFF6F5;
+    --accent-2: #BC8642; --accent-2-soft: #F1E2C9;
+    --line: rgba(51, 33, 28, 0.10); --line-strong: rgba(51, 33, 28, 0.20);
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--page); color: var(--ink); font-family: var(--sans); }
+  .page :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .page img, .page svg { max-width: 100%; }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- Nav ---------- */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 26px 28px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .nav .mark {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .nav .mark em { font-style: normal; color: var(--accent); }
+  .nav .mono {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  /* ---------- Language switcher (UI mockup — labels only, no translation) ---------- */
+  .lang-switch { position: relative; }
+  .lang-current {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    padding: 8px 13px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .lang-current svg { width: 13px; height: 13px; transition: transform 0.15s ease; }
+  .lang-switch.open .lang-current svg { transform: rotate(180deg); }
+  .lang-current:hover { border-color: var(--accent); color: var(--ink); }
+  .lang-list {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 148px;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    box-shadow: 0 16px 32px -12px rgba(51, 33, 28, 0.25);
+    z-index: 20;
+  }
+  .lang-switch:not(.open) .lang-list { display: none; }
+  .lang-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13.5px;
+    padding: 9px 11px;
+    border-radius: 9px;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .lang-item:hover { background: var(--surface-2); color: var(--ink); }
+  .lang-item .native { font-weight: 600; color: var(--ink); }
+  .lang-item .en { font-family: var(--mono); font-size: 10.5px; color: var(--ink-faint); }
+  .lang-item[aria-selected="true"] { background: var(--accent-ink); }
+  .lang-item[aria-selected="true"] .native { color: var(--accent-deep); }
+  footer .lang-switch { display: inline-flex; margin-top: 18px; }
+  footer .lang-list { right: auto; left: 50%; transform: translateX(-50%); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding: 30px 0 70px;
+  }
+  .hero canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.55;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 28px;
+    text-align: center;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    background: var(--accent-ink);
+    border: 1px solid var(--line);
+    padding: 7px 14px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(40px, 7vw, 68px);
+    line-height: 1.18;
+    letter-spacing: -0.015em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero .en-line {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(14px, 2vw, 17px);
+    color: var(--ink-soft);
+    margin: 0 0 30px;
+  }
+  .hero p.lede {
+    font-size: 17px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    max-width: 34em;
+    margin: 0 auto 38px;
+  }
+
+  .waitlist {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .waitlist input {
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 15px 18px;
+    border-radius: 30px;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+    width: 300px;
+    max-width: 70vw;
+  }
+  .waitlist input::placeholder { color: var(--ink-faint); }
+  .waitlist button {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 15px 26px;
+    border-radius: 30px;
+    border: none;
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
+  }
+  .waitlist button:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -8px var(--accent-deep); }
+  .waitlist button:active { transform: translateY(0); }
+  .hero .fine {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------- Section rhythm ---------- */
+  section.band { padding: 76px 0; border-top: 1px solid var(--line); }
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+
+  .sec-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 16px;
+  }
+  .sec-eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ---------- Founder note ---------- */
+  .note {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .note blockquote {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(22px, 3.4vw, 30px);
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0 0 26px;
+    text-wrap: balance;
+  }
+  .note p { font-size: 16px; line-height: 1.85; color: var(--ink-soft); margin: 0 0 16px; max-width: 60ch; }
+  .note .sig {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-top: 20px;
+  }
+
+  /* ---------- Features ---------- */
+  .feat-head { max-width: 640px; margin: 0 0 44px; }
+  .feat-head h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(26px, 4vw, 34px);
+    margin: 0;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .feat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .feat-card {
+    background: var(--surface);
+    padding: 32px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: background 0.2s ease;
+  }
+  .feat-card:hover { background: var(--surface-2); }
+  .feat-card .icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: var(--accent-ink);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .feat-card .icon svg { width: 20px; height: 20px; }
+  .feat-card h3 { font-family: var(--sans); font-size: 16px; font-weight: 700; margin: 0; }
+  .feat-card p { font-size: 14.5px; line-height: 1.7; color: var(--ink-soft); margin: 0; }
+
+  @media (max-width: 640px) {
+    .feat-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Channel preview ---------- */
+  .channel-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .chip {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 22px;
+  }
+  .chip.main { background: var(--accent-ink); color: var(--accent-deep); }
+  .chip.more {
+    font-weight: 500;
+    color: var(--ink-faint);
+    border: 1px dashed var(--line-strong);
+  }
+  .chip-note { font-size: 14px; color: var(--ink-soft); max-width: 52ch; margin: 0; }
+
+  /* ---------- Trust strip ---------- */
+  .trust {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+  .trust-item { max-width: 220px; }
+  .trust-item .num { font-family: var(--serif); font-size: 15px; color: var(--accent-deep); margin-bottom: 8px; }
+  .trust-item p { font-size: 14px; color: var(--ink-soft); margin: 0; line-height: 1.6; }
+
+  /* ---------- Final CTA ---------- */
+  .final {
+    text-align: center;
+    background: linear-gradient(180deg, var(--surface-2), var(--page));
+  }
+  .final h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(28px, 4.6vw, 40px);
+    line-height: 1.35;
+    margin: 0 0 34px;
+    text-wrap: balance;
+  }
+  .final h2 em { font-style: normal; color: var(--accent); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    padding: 40px 0 56px;
+    text-align: center;
+  }
+  footer .mark {
+    font-family: var(--serif);
+    font-size: 15px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  footer .mark em { font-style: normal; color: var(--accent); }
+  footer .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-faint);
+  }
+</style>
+
+<div class="page">
+  <nav class="nav">
+    <div class="mark">유병장수 <em>· LWI</em></div>
+    <div class="lang-switch">
+      <button class="lang-current" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="lang-current-label">한국어</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="lang-list" role="listbox">
+        <li class="lang-item" role="option" aria-selected="true" data-label="한국어"><span class="native">한국어</span><span class="en">KOR</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="English"><span class="native">English</span><span class="en">ENG</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="中文"><span class="native">中文</span><span class="en">CHN</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="日本語"><span class="native">日本語</span><span class="en">JPN</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="Tiếng Việt"><span class="native">Tiếng Việt</span><span class="en">VIE</span></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <canvas id="wave" aria-hidden="true"></canvas>
+    <div class="hero-inner">
+      <div class="eyebrow"><span class="dot"></span>유병장수 · LWI — 곧 만나요</div>
+      <h1>병을 갖고도,<br><em>장수</em>를 꿈꾸는</h1>
+      <p class="en-line">Living Well with Illness — Longevity, redefined, one well-lived day at a time.</p>
+      <p class="lede">누구나 질병을 안고 살아갑니다. 가벼운 질병부터 만성질환까지, 서로의 경험과 치료 정보를 공감하는 커뮤니티를 준비하고 있습니다.</p>
+      <form class="waitlist" onsubmit="return false;">
+        <input type="email" placeholder="이메일 주소" aria-label="이메일 주소" required>
+        <button type="submit">출시 알림 받기</button>
+      </form>
+      <p class="fine">스팸 없이 출시 소식만 · 이메일은 인증 목적에만 사용되며 공개되지 않습니다</p>
+    </div>
+  </header>
+
+  <section class="band">
+    <div class="wrap note reveal">
+      <div class="sec-eyebrow"><span class="dot"></span>왜 유병장수인가</div>
+      <blockquote>"고혈압, 당뇨… 10년째 관리 중인 병도, 막상 입 밖으로 꺼내기는 여전히 어렵습니다."</blockquote>
+      <p>완치가 아니라 관리가 목표인 병은 일상 대화에서 잘 꺼내지지 않습니다. 암처럼 주변의 걱정을 받지도, 감기처럼 금방 낫지도 않기 때문입니다. 정작 필요한 건 같은 병을 먼저 겪어본 사람의 진짜 경험인데, 그걸 편하게 나눌 곳이 마땅치 않았습니다.</p>
+      <p>그래서 유병장수를 만듭니다. 가벼운 질병부터 만성질환까지, 마음을 열고 사람들과 이야기할 수 있는 공간이 필요한 모든 사람을 위해서.</p>
+      <div class="sig">— 유병장수를 만드는 사람</div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap reveal">
+      <div class="sec-eyebrow"><span class="dot"></span>무엇이 다른가</div>
+      <div class="feat-head">
+        <h2>혼자 견디지 않아도 됩니다</h2>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg></div>
+          <h3>질병별 채널</h3>
+          <p>고혈압부터 비염까지, 같은 병을 겪는 사람들과 채널에서 만나요. 여러 채널에 동시에 속할 수 있고, 주요 채널은 실제 진료 데이터를 기준으로 정해요.</p>
+        </div>
+        <div class="feat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/><path d="M18 4l1.6 1.6M19.6 4 18 5.6" stroke-linecap="round"/></svg></div>
+          <h3>익명 + 이메일 인증</h3>
+          <p>닉네임으로 활동하되, 가입 시 이메일 인증만 거쳐요. 인증 정보는 프로필을 포함해 어디에도 노출되지 않아요.</p>
+        </div>
+        <div class="feat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg></div>
+          <h3>공감 반응</h3>
+          <p>'좋아요' 대신 "저도 그래요", "저는 이렇게 해봤어요"로 답해요. 질병 공감에 맞춘 반응 방식이에요.</p>
+        </div>
+        <div class="feat-card">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg></div>
+          <h3>경험담 · 근거자료 구분</h3>
+          <p>개인 경험담과 출처 있는 정보를 시각적으로 구분해 보여줘요. 판단은 늘 당신의 몫이에요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap reveal">
+      <div class="sec-eyebrow"><span class="dot"></span>어떤 채널이 있나요</div>
+      <div class="feat-head">
+        <h2>가장 많은 분들이 겪는 질병부터,<br>실제 진료 데이터를 기준으로 엽니다</h2>
+      </div>
+      <div class="channel-chips">
+        <span class="chip main">고혈압</span>
+        <span class="chip main">당뇨</span>
+        <span class="chip main">관절염</span>
+        <span class="chip main">탈모</span>
+        <span class="chip main">비염</span>
+        <span class="chip main">위염</span>
+        <span class="chip more">+ 더 많은 채널이 열려요</span>
+      </div>
+      <p class="chip-note">주요 채널 외에도 원하는 질병으로 직접 채널을 만들 수 있어요. 참여가 많아지면 주요 채널로 승격돼요.</p>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="wrap trust reveal">
+      <div class="trust-item"><div class="num">병원 치료</div><p>유병장수는 병원 치료를 대체하지 않습니다. 관리와 공감을 돕는 자리입니다.</p></div>
+      <div class="trust-item"><div class="num">스마트폰 전용</div><p>iOS·Android 네이티브 앱으로, 언제 어디서나 편하게 열어볼 수 있습니다.</p></div>
+      <div class="trust-item"><div class="num">비공개 이메일</div><p>가입 인증에만 쓰이고, 다른 사용자에게는 절대 공개되지 않습니다.</p></div>
+      <div class="trust-item"><div class="num">5개 국어</div><p>한국어부터 베트남어까지, 내 언어로 편하게 둘러볼 수 있습니다.</p></div>
+    </div>
+  </section>
+
+  <section class="band final">
+    <div class="wrap reveal">
+      <h2>매일을 잘 사는 것부터,<br><em>장수</em>는 거기서 시작됩니다</h2>
+      <form class="waitlist" onsubmit="return false;">
+        <input type="email" placeholder="이메일 주소" aria-label="이메일 주소" required>
+        <button type="submit">출시 알림 받기</button>
+      </form>
+      <p class="fine">스팸 없이 출시 소식만 보내드립니다</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="mark">유병장수 <em>· LWI</em></div>
+    <div class="tag">LIVING WELL WITH ILLNESS</div>
+    <div class="lang-switch">
+      <button class="lang-current" type="button" aria-haspopup="listbox" aria-expanded="false">
+        <span class="lang-current-label">한국어</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <ul class="lang-list" role="listbox">
+        <li class="lang-item" role="option" aria-selected="true" data-label="한국어"><span class="native">한국어</span><span class="en">KOR</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="English"><span class="native">English</span><span class="en">ENG</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="中文"><span class="native">中文</span><span class="en">CHN</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="日本語"><span class="native">日本語</span><span class="en">JPN</span></li>
+        <li class="lang-item" role="option" aria-selected="false" data-label="Tiếng Việt"><span class="native">Tiếng Việt</span><span class="en">VIE</span></li>
+      </ul>
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var canvas = document.getElementById('wave');
+  var ctx = canvas.getContext('2d');
+  var hero = canvas.parentElement;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  var w, h, t = 0;
+
+  function styleColor(varName, fallback) {
+    var v = getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    return v || fallback;
+  }
+
+  function resize() {
+    w = hero.clientWidth;
+    h = hero.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function drawLine(amp, freq, phase, yBase, color, lw) {
+    ctx.beginPath();
+    for (var x = 0; x <= w; x += 6) {
+      var y = yBase + Math.sin(x * freq + phase) * amp;
+      if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw;
+    ctx.stroke();
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, w, h);
+    var accent = styleColor('--accent', '#D9718A');
+    var accent2 = styleColor('--accent-2', '#BC8642');
+    var base = h * 0.62;
+    drawLine(26, 0.010, t * 0.6, base - 40, accent + '33', 1.5);
+    drawLine(38, 0.007, t * 0.4 + 2, base, accent2 + '2b', 1.5);
+    drawLine(20, 0.014, t * 0.8 + 4, base + 44, accent + '26', 1.5);
+    if (!reduced) { t += 0.012; requestAnimationFrame(frame); }
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  frame();
+})();
+
+(function () {
+  var els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+    });
+  }, { threshold: 0.15 });
+  els.forEach(function (e) { io.observe(e); });
+})();
+
+(function () {
+  // UI mockup only — swaps the displayed label, does not translate page content.
+  var switches = document.querySelectorAll('.lang-switch');
+  switches.forEach(function (sw) {
+    var btn = sw.querySelector('.lang-current');
+    var label = sw.querySelector('.lang-current-label');
+    var items = sw.querySelectorAll('.lang-item');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isOpen = sw.classList.toggle('open');
+      btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    items.forEach(function (item) {
+      item.addEventListener('click', function () {
+        items.forEach(function (i) { i.setAttribute('aria-selected', 'false'); });
+        item.setAttribute('aria-selected', 'true');
+        label.textContent = item.getAttribute('data-label');
+        sw.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  });
+  document.addEventListener('click', function () {
+    switches.forEach(function (sw) { sw.classList.remove('open'); });
+  });
+})();
+</script>
