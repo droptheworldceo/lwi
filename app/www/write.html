@@ -16,6 +16,20 @@
   .kind-toggle button.on.evi { background: var(--accent-2-soft); border-color: var(--accent-2); color: var(--accent-2); }
   .kind-toggle .desc { font-size: 11.5px; color: var(--ink-faint); margin-top: 6px; }
   #source-field { display: none; }
+  .image-field { margin-bottom: 18px; }
+  .image-add {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 16px; border-radius: 12px; border: 1px dashed var(--line-strong);
+    background: none; color: var(--ink-faint); font-size: 13.5px; cursor: pointer;
+  }
+  .image-add svg { width: 18px; height: 18px; }
+  .image-preview { position: relative; margin-top: 10px; }
+  .image-preview img { width: 100%; max-height: 260px; object-fit: cover; border-radius: 12px; display: block; }
+  .image-preview button {
+    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(20,12,10,0.6); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  .image-preview button svg { width: 14px; height: 14px; }
 </style>
 </head>
 <body>
@@ -46,6 +60,20 @@
       <input id="source" type="text" placeholder="예: OO병원 칼럼, 논문명 등">
     </div>
 
+    <div class="image-field">
+      <input type="file" id="image-input" accept="image/*" style="display:none;">
+      <button type="button" class="image-add" id="image-add-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        사진 추가 (선택)
+      </button>
+      <div class="image-preview" id="image-preview" style="display:none;">
+        <img id="image-preview-img" alt="">
+        <button type="button" id="image-remove-btn" aria-label="사진 제거">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
     <div class="field">
       <label for="body">내용</label>
       <textarea id="body" rows="8" placeholder="같은 병을 겪는 사람들에게 전하고 싶은 이야기를 편하게 적어주세요."></textarea>
@@ -62,12 +90,40 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=5"></script>
+<script src="js/data.js?v=6"></script>
+<script src="js/ui.js?v=1"></script>
 <script>
   var params = new URLSearchParams(window.location.search);
+  var selectedFile = null;
+  var imageInput = document.getElementById("image-input");
+  var imagePreview = document.getElementById("image-preview");
+  var imagePreviewImg = document.getElementById("image-preview-img");
+  var imageAddBtn = document.getElementById("image-add-btn");
+
+  imageAddBtn.addEventListener("click", function () { imageInput.click(); });
+  imageInput.addEventListener("change", function () {
+    var file = imageInput.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      window.LWI.showToast("사진은 5MB 이하로 올려주세요.");
+      imageInput.value = "";
+      return;
+    }
+    selectedFile = file;
+    imagePreviewImg.src = URL.createObjectURL(file);
+    imagePreview.style.display = "block";
+    imageAddBtn.style.display = "none";
+  });
+  document.getElementById("image-remove-btn").addEventListener("click", function () {
+    selectedFile = null;
+    imageInput.value = "";
+    imagePreview.style.display = "none";
+    imageAddBtn.style.display = "flex";
+  });
   var presetChannel = params.get("channel");
   if (presetChannel) document.getElementById("back-link").href = "channel.html?id=" + encodeURIComponent(presetChannel);
 
@@ -143,8 +199,23 @@
       };
       if (kind === "evidence") post.sourceNote = sourceVal;
 
-      window.LWI.createPost(post).then(function (ref) {
+      var submitBtn = document.getElementById("submit-btn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = selectedFile ? "사진 업로드 중..." : "올리는 중...";
+
+      var uploadStep = selectedFile
+        ? window.LWI.uploadPostImage(user.uid, selectedFile).then(function (url) { post.imageUrl = url; })
+        : Promise.resolve();
+
+      uploadStep.then(function () {
+        return window.LWI.createPost(post);
+      }).then(function (ref) {
         window.location.href = "post.html?id=" + ref.id;
+      }).catch(function (err) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "올리기";
+        bannedEl.textContent = err.message || "문제가 발생했어요. 다시 시도해주세요.";
+        bannedEl.style.display = "block";
       });
     });
   });

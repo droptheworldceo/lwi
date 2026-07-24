@@ -33,6 +33,7 @@
   .post-top { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
   .post-who { margin-left: auto; font-size: 11.5px; color: var(--ink-faint); }
   .post-body { margin: 0 0 10px; font-size: 14px; line-height: 1.6; }
+  .feed-thumb { width: 100%; max-height: 160px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; display: block; }
   .post-foot { display: flex; align-items: center; gap: 14px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
   .post-foot button { background: none; border: none; padding: 0; display: flex; align-items: center; gap: 4px; color: inherit; font: inherit; cursor: pointer; }
   .post-foot button.liked { color: var(--accent-deep); font-weight: 700; }
@@ -100,7 +101,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=5"></script>
+<script src="js/data.js?v=6"></script>
 <script>
   function heartIcon() {
     return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>';
@@ -142,6 +143,7 @@
           '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + (p.kind === "evidence" ? "근거자료" : "경험담") + '</span>' +
           '<span class="post-who">' + (p.authorNickname || "익명") + '</span>' +
         '</div>' +
+        (p.imageUrl ? '<a href="post.html?id=' + p.id + '"><img class="feed-thumb" src="' + p.imageUrl + '" alt=""></a>' : "") +
         '<p class="post-body"><a href="post.html?id=' + p.id + '" style="color:inherit;">' + (p.body || "").slice(0, 90) + '</a></p>' +
         '<div class="post-foot">' +
           '<button data-like="' + p.id + '">' + heartIcon() + '<span>' + (p.empathyCount || 0) + '</span></button>' +

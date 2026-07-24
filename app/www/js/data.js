@@ -86,6 +86,13 @@ window.LWI.findBannedTerm = function (text) {
   return window.LWI.BANNED_TERMS.find(function (term) { return text.indexOf(term) !== -1; }) || null;
 };
 
+// 이미지 업로드: Storage postImages/{uid}/{timestamp}_{파일명}에 저장 후 다운로드 URL 반환.
+window.LWI.uploadPostImage = function (uid, file) {
+  var path = "postImages/" + uid + "/" + Date.now() + "_" + file.name.replace(/[^\w.\-]/g, "_");
+  var ref = window.LWI.storage.ref().child(path);
+  return ref.put(file).then(function (snap) { return snap.ref.getDownloadURL(); });
+};
+
 window.LWI.createPost = function (post) {
   return window.LWI.db.collection("posts").add(Object.assign({}, post, {
     empathyCount: 0,

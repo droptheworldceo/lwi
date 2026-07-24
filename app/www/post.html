@@ -43,6 +43,7 @@
         <span class="post-who" id="post-who"></span>
         <button class="kebab-btn" id="post-kebab" aria-label="더보기"></button>
       </div>
+      <img id="post-image" alt="" style="display:none; width:100%; border-radius:12px; margin-bottom:12px;">
       <p class="post-body" id="post-body"></p>
       <div class="source-note" id="source-note" style="display:none;"></div>
       <div class="disclaimer">유병장수는 의료행위를 중개·알선하지 않는 정보 공유 목적의 서비스입니다. 이 내용은 개인 경험 또는 참고 정보이며, 병원 치료를 대체하지 않습니다.</div>
@@ -71,7 +72,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=5"></script>
+<script src="js/data.js?v=6"></script>
 <script src="js/ui.js?v=1"></script>
 <script>
   var params = new URLSearchParams(window.location.search);
@@ -131,6 +132,11 @@
       kindEl.classList.add(post.kind === "evidence" ? "evi" : "exp");
       document.getElementById("post-who").textContent = post.authorNickname || "익명";
       document.getElementById("post-body").textContent = post.body;
+      if (post.imageUrl) {
+        var img = document.getElementById("post-image");
+        img.src = post.imageUrl;
+        img.style.display = "block";
+      }
       if (post.kind === "evidence" && post.sourceNote) {
         var sn = document.getElementById("source-note");
         sn.style.display = "block";
