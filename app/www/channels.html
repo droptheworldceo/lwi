@@ -108,6 +108,9 @@
       var mains = results[0].length ? results[0] : window.LWI.FALLBACK_MAIN_CHANNELS;
       renderList(document.getElementById("main-channels"), mains, joined, uid);
       renderList(document.getElementById("sub-channels"), results[1], joined, uid);
+    }).catch(function (err) {
+      console.error("listChannels failed", err);
+      renderList(document.getElementById("main-channels"), window.LWI.FALLBACK_MAIN_CHANNELS, joined, uid);
     });
 
     document.getElementById("new-btn").addEventListener("click", function () {

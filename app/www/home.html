@@ -186,9 +186,15 @@
 
     window.LWI.listChannels("main").then(function (channels) {
       renderChannels(channels.length ? channels : window.LWI.FALLBACK_MAIN_CHANNELS, profile.joinedChannels || []);
+    }).catch(function (err) {
+      console.error("listChannels failed", err);
+      renderChannels(window.LWI.FALLBACK_MAIN_CHANNELS, profile.joinedChannels || []);
     });
 
-    window.LWI.listPosts({ limitN: 20 }).then(renderFeed);
+    window.LWI.listPosts({ limitN: 20 }).then(renderFeed).catch(function (err) {
+      console.error("listPosts failed", err);
+      renderFeed([]);
+    });
 
     document.getElementById("feed").addEventListener("click", function (e) {
       var btn = e.target.closest("button[data-like]");

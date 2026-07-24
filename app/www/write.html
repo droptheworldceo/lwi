@@ -102,6 +102,9 @@
     Promise.all([window.LWI.listChannels("main"), window.LWI.listChannels("sub")]).then(function (results) {
       var all = (results[0].length ? results[0] : window.LWI.FALLBACK_MAIN_CHANNELS).concat(results[1]);
       fillChannels(all, profile.joinedChannels || []);
+    }).catch(function (err) {
+      console.error("listChannels failed", err);
+      fillChannels(window.LWI.FALLBACK_MAIN_CHANNELS, []);
     });
 
     document.getElementById("submit-btn").addEventListener("click", function () {
