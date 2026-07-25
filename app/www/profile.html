@@ -38,7 +38,7 @@
 <div class="app">
   <div class="topbar">
     <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
-    <h1>마이페이지</h1>
+    <h1 data-i18n="profile.title"></h1>
   </div>
   <div class="content">
     <div class="avatar-row">
@@ -46,49 +46,49 @@
       <div>
         <div class="name-edit">
           <input id="nickname-input" type="text" maxlength="12">
-          <span class="save" id="save-nickname">저장</span>
+          <span class="save" id="save-nickname" data-i18n="profile.save"></span>
         </div>
         <div class="email-line" id="email-line">-</div>
       </div>
     </div>
 
     <div class="stat-row">
-      <div class="stat"><div class="n" id="stat-checkins">-</div><div class="l">기록 일수</div></div>
-      <div class="stat"><div class="n" id="stat-posts">-</div><div class="l">쓴 이야기</div></div>
-      <div class="stat"><div class="n" id="stat-channels">-</div><div class="l">참여 채널</div></div>
+      <div class="stat"><div class="n" id="stat-checkins">-</div><div class="l" data-i18n="profile.statCheckins"></div></div>
+      <div class="stat"><div class="n" id="stat-posts">-</div><div class="l" data-i18n="profile.statPosts"></div></div>
+      <div class="stat"><div class="n" id="stat-channels">-</div><div class="l" data-i18n="profile.statChannels"></div></div>
     </div>
 
-    <div class="group-label">참여 중인 채널</div>
-    <div class="my-channels" id="my-channels"><span class="tag">불러오는 중...</span></div>
+    <div class="group-label" data-i18n="profile.myChannelsTitle"></div>
+    <div class="my-channels" id="my-channels"><span class="tag">…</span></div>
 
-    <div class="group-label">내가 쓴 이야기</div>
-    <div id="my-posts"><div class="empty-state"><p>불러오는 중...</p></div></div>
+    <div class="group-label" data-i18n="profile.myPostsTitle"></div>
+    <div id="my-posts"><div class="empty-state"><p>…</p></div></div>
 
-    <div class="group-label">차단한 사용자</div>
-    <div id="blocked-list"><div class="empty-state"><p>차단한 사용자가 없어요.</p></div></div>
+    <div class="group-label" data-i18n="profile.blockedTitle"></div>
+    <div id="blocked-list"><div class="empty-state"><p data-i18n="profile.blockedEmpty"></p></div></div>
 
     <div class="signout">
-      <a class="btn btn-ghost" href="settings.html" style="display:flex; align-items:center; justify-content:center; margin-bottom:10px; text-decoration:none;">설정</a>
-      <button class="btn btn-ghost" id="signout-btn">로그아웃</button>
+      <a class="btn btn-ghost" href="settings.html" style="display:flex; align-items:center; justify-content:center; margin-bottom:10px; text-decoration:none;" data-i18n="profile.settingsLink"></a>
+      <button class="btn btn-ghost" id="signout-btn" data-i18n="profile.signout"></button>
     </div>
   </div>
 
   <nav class="tabbar">
     <a class="tab" href="home.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
-      <span>홈</span>
+      <span data-i18n="nav.home"></span>
     </a>
     <a class="tab" href="channels.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
-      <span>커뮤니티</span>
+      <span data-i18n="nav.community"></span>
     </a>
     <a class="tab" href="write.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
-      <span>글쓰기</span>
+      <span data-i18n="nav.write"></span>
     </a>
     <a class="tab on" href="profile.html">
       <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
-      <span>나</span>
+      <span data-i18n="nav.me"></span>
     </a>
   </nav>
 </div>
@@ -100,6 +100,7 @@
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
 <script src="js/data.js?v=7"></script>
+<script src="js/i18n.js?v=1"></script>
 <script>
   window.LWI.requireAuth(function (user, profile) {
     if (!window.LWI.isConfigured) return;
@@ -131,8 +132,9 @@
     var joined = profile.joinedChannels || [];
     document.getElementById("stat-channels").textContent = joined.length;
     var chEl = document.getElementById("my-channels");
+    var chEmptyHtml = '<a href="channels.html">' + window.LWI.t("profile.myChannelsEmpty") + '</a>';
     if (!joined.length) {
-      chEl.innerHTML = '<a href="channels.html">아직 참여한 채널이 없어요 · 둘러보기</a>';
+      chEl.innerHTML = chEmptyHtml;
     } else {
       chEl.innerHTML = "";
       Promise.all(joined.map(function (id) {
@@ -145,21 +147,21 @@
           a.textContent = d.data().name;
           chEl.appendChild(a);
         });
-        if (!chEl.children.length) chEl.innerHTML = '<a href="channels.html">아직 참여한 채널이 없어요 · 둘러보기</a>';
+        if (!chEl.children.length) chEl.innerHTML = chEmptyHtml;
       });
     }
 
     window.LWI.listMyPosts(uid).then(function (posts) {
       document.getElementById("stat-posts").textContent = posts.length;
       var el = document.getElementById("my-posts");
-      if (!posts.length) { el.innerHTML = '<div class="empty-state"><p>아직 쓴 이야기가 없어요.</p></div>'; return; }
+      if (!posts.length) { el.innerHTML = '<div class="empty-state"><p>' + window.LWI.t("profile.myPostsEmpty") + '</p></div>'; return; }
       el.innerHTML = "";
       posts.forEach(function (p) {
         var div = document.createElement("div");
         div.className = "my-post";
         div.innerHTML =
           '<a href="post.html?id=' + p.id + '"></a>' +
-          '<div class="meta">' + (p.channelName || "") + ' · 공감 ' + (p.empathyCount || 0) + '</div>';
+          '<div class="meta">' + window.LWI.t("profile.myPostMeta", { "{channel}": p.channelName || "", "{n}": p.empathyCount || 0 }) + '</div>';
         div.querySelector("a").textContent = (p.body || "").slice(0, 60);
         el.appendChild(div);
       });
@@ -169,12 +171,12 @@
       var blocked = profile.blockedUsers || {};
       var el = document.getElementById("blocked-list");
       var uids = Object.keys(blocked);
-      if (!uids.length) { el.innerHTML = '<div class="empty-state"><p>차단한 사용자가 없어요.</p></div>'; return; }
+      if (!uids.length) { el.innerHTML = '<div class="empty-state"><p>' + window.LWI.t("profile.blockedEmpty") + '</p></div>'; return; }
       el.innerHTML = "";
       uids.forEach(function (blockedUid) {
         var row = document.createElement("div");
         row.className = "blocked-item";
-        row.innerHTML = '<span></span><button data-unblock="' + blockedUid + '">차단 해제</button>';
+        row.innerHTML = '<span></span><button data-unblock="' + blockedUid + '">' + window.LWI.t("profile.unblock") + '</button>';
         row.querySelector("span").textContent = blocked[blockedUid];
         el.appendChild(row);
       });

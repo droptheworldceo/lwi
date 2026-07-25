@@ -20,15 +20,16 @@ window.LWI.openReportBlockSheet = function (opts) {
   var sheet = document.createElement("div");
   sheet.className = "sheet";
 
-  var html = "<h3>신고하기</h3>";
+  var REASON_KEYS = { spam: "sheet.reasonSpam", abuse: "sheet.reasonAbuse", misinfo: "sheet.reasonMisinfo", privacy: "sheet.reasonPrivacy", etc: "sheet.reasonEtc" };
+  var html = "<h3>" + window.LWI.t("sheet.reportTitle") + "</h3>";
   window.LWI.REPORT_REASONS.forEach(function (r) {
-    html += '<button class="sheet-option" data-reason="' + r.code + '">' + r.label + "</button>";
+    html += '<button class="sheet-option" data-reason="' + r.code + '">' + window.LWI.t(REASON_KEYS[r.code]) + "</button>";
   });
   if (!opts.isOwn) {
-    html += "<h3>기타</h3>";
-    html += '<button class="sheet-option danger" data-action="block">작성자 차단하기</button>';
+    html += "<h3>" + window.LWI.t("sheet.otherTitle") + "</h3>";
+    html += '<button class="sheet-option danger" data-action="block">' + window.LWI.t("sheet.blockAuthor") + '</button>';
   }
-  html += '<button class="sheet-cancel" data-action="cancel">취소</button>';
+  html += '<button class="sheet-cancel" data-action="cancel">' + window.LWI.t("sheet.cancel") + '</button>';
   sheet.innerHTML = html;
   overlay.appendChild(sheet);
   document.body.appendChild(overlay);
@@ -47,7 +48,7 @@ window.LWI.openReportBlockSheet = function (opts) {
         reason: btn.dataset.reason
       }).then(function () {
         close();
-        window.LWI.showToast("신고가 접수됐어요. 검토 후 조치할게요.");
+        window.LWI.showToast(window.LWI.t("sheet.reportSuccess"));
       });
     });
   });
@@ -57,7 +58,7 @@ window.LWI.openReportBlockSheet = function (opts) {
     blockBtn.addEventListener("click", function () {
       close();
       window.LWI.blockUser(opts.reporterUid, opts.authorUid, opts.authorNickname).then(function () {
-        window.LWI.showToast((opts.authorNickname || "작성자") + "님을 차단했어요.");
+        window.LWI.showToast(window.LWI.t("sheet.blockSuccess", { "{name}": opts.authorNickname || window.LWI.t("common.anonymous") }));
         if (opts.onBlocked) opts.onBlocked();
       });
     });

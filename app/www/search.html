@@ -28,13 +28,13 @@
 <div class="app">
   <div class="topbar">
     <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
-    <h1>검색</h1>
+    <h1 data-i18n="search.title"></h1>
   </div>
   <div class="search-bar">
-    <input id="q" type="search" placeholder="채널 이름이나 이야기 내용으로 검색" autofocus>
+    <input id="q" type="search" data-i18n-placeholder="search.placeholder" autofocus>
   </div>
   <div class="content">
-    <div id="results"><div class="empty-state"><p>궁금한 질병이나 키워드를 입력해보세요.</p></div></div>
+    <div id="results"><div class="empty-state"><p data-i18n="search.emptyPrompt"></p></div></div>
   </div>
 </div>
 
@@ -45,6 +45,7 @@
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
 <script src="js/data.js?v=7"></script>
+<script src="js/i18n.js?v=1"></script>
 <script>
   function escapeHtml(s) {
     return (s || "").replace(/[&<>"]/g, function (c) {
@@ -66,7 +67,7 @@
   function render(query) {
     var el = document.getElementById("results");
     var q = query.trim();
-    if (!q) { el.innerHTML = '<div class="empty-state"><p>궁금한 질병이나 키워드를 입력해보세요.</p></div>'; return; }
+    if (!q) { el.innerHTML = '<div class="empty-state"><p>' + window.LWI.t("search.emptyPrompt") + '</p></div>'; return; }
 
     var matchedChannels = allChannels.filter(function (c) { return c.name.toLowerCase().indexOf(q.toLowerCase()) !== -1; });
     var matchedPosts = window.LWI.filterBlocked(
@@ -78,26 +79,26 @@
     );
 
     if (!matchedChannels.length && !matchedPosts.length) {
-      el.innerHTML = '<div class="empty-state"><p>"' + escapeHtml(q) + '"에 대한 결과가 없어요.</p></div>';
+      el.innerHTML = '<div class="empty-state"><p>' + window.LWI.t("search.noResults", { "{q}": escapeHtml(q) }) + '</p></div>';
       return;
     }
 
     var html = "";
     if (matchedChannels.length) {
-      html += '<div class="group-label">채널 ' + matchedChannels.length + '</div>';
+      html += '<div class="group-label">' + window.LWI.t("search.channelsLabel") + ' ' + matchedChannels.length + '</div>';
       matchedChannels.forEach(function (c) {
-        html += '<div class="ch-row"><a href="channel.html?id=' + c.id + '">' + highlight(c.name, q) + '</a><span class="count">' + (c.memberCount || 0) + '명</span></div>';
+        html += '<div class="ch-row"><a href="channel.html?id=' + c.id + '">' + highlight(c.name, q) + '</a><span class="count">' + window.LWI.t("channels.memberCountShort", { "{n}": c.memberCount || 0 }) + '</span></div>';
       });
     }
     if (matchedPosts.length) {
-      html += '<div class="group-label">이야기 ' + matchedPosts.length + '</div><div class="feed">';
+      html += '<div class="group-label">' + window.LWI.t("search.storiesLabel") + ' ' + matchedPosts.length + '</div><div class="feed">';
       matchedPosts.slice(0, 40).forEach(function (p) {
         html +=
           '<div class="card">' +
             '<div class="post-top">' +
               '<span class="tag">' + escapeHtml(p.channelName || "") + '</span>' +
-              '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + (p.kind === "evidence" ? "근거자료" : "경험담") + '</span>' +
-              '<span class="post-who">' + escapeHtml(p.authorNickname || "익명") + '</span>' +
+              '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + window.LWI.t(p.kind === "evidence" ? "common.kindEvidence" : "common.kindExperience") + '</span>' +
+              '<span class="post-who">' + escapeHtml(p.authorNickname || window.LWI.t("common.anonymous")) + '</span>' +
             '</div>' +
             '<p class="post-body"><a href="post.html?id=' + p.id + '" style="color:inherit;">' + highlight((p.body || "").slice(0, 100), q) + '</a></p>' +
           '</div>';

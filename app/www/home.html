@@ -45,52 +45,52 @@
   <div class="topbar">
     <h1>유병장수 <span style="color:var(--accent-deep)">· LWI</span></h1>
     <a class="back" href="search.html" style="margin-right:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></a>
-    <a class="action" href="profile.html">나</a>
+    <a class="action" href="profile.html" data-i18n="nav.me"></a>
   </div>
 
   <div class="content">
     <div class="greet">
       <div class="brand-eyebrow">유병장수 · LWI</div>
-      <h2>병을 갖고도<br><em>장수</em>를 꿈꾸는</h2>
-      <p class="hello">안녕하세요, <b id="hello-nickname">-</b>님</p>
+      <h2 data-i18n-html="home.headlineHtml"></h2>
+      <p class="hello"><span id="hello-text"></span></p>
     </div>
 
     <div class="card checkin">
       <div class="checkin-top">
-        <p>오늘 컨디션은 어떠세요?</p>
-        <span class="streak" id="checkin-count">- 일째 기록 중</span>
+        <p data-i18n="home.checkinQ"></p>
+        <span class="streak" id="checkin-count">-</span>
       </div>
       <div class="mood-row" id="mood-row">
-        <button class="mood-btn" data-mood="힘듦">힘듦</button>
-        <button class="mood-btn" data-mood="피곤">피곤</button>
-        <button class="mood-btn" data-mood="보통">보통</button>
-        <button class="mood-btn" data-mood="좋음">좋음</button>
+        <button class="mood-btn" data-mood="힘듦" data-i18n="home.moodTough"></button>
+        <button class="mood-btn" data-mood="피곤" data-i18n="home.moodTired"></button>
+        <button class="mood-btn" data-mood="보통" data-i18n="home.moodNormal"></button>
+        <button class="mood-btn" data-mood="좋음" data-i18n="home.moodGood"></button>
       </div>
     </div>
 
-    <div class="section-label"><h3>내 채널</h3><a href="channels.html">전체보기</a></div>
-    <div class="chips" id="channel-chips"><span class="chip-link">불러오는 중...</span></div>
+    <div class="section-label"><h3 data-i18n="home.myChannels"></h3><a href="channels.html" data-i18n="home.seeAll"></a></div>
+    <div class="chips" id="channel-chips"><span class="chip-link">…</span></div>
 
-    <div class="section-label"><h3>새로운 이야기</h3><a href="channels.html">더보기</a></div>
-    <div class="feed" id="feed"><div class="empty-state"><p>불러오는 중...</p></div></div>
+    <div class="section-label"><h3 data-i18n="home.newStories"></h3><a href="channels.html" data-i18n="home.more"></a></div>
+    <div class="feed" id="feed"><div class="empty-state"><p>…</p></div></div>
   </div>
 
   <nav class="tabbar">
     <a class="tab on" href="home.html">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
-      <span>홈</span>
+      <span data-i18n="nav.home"></span>
     </a>
     <a class="tab" href="channels.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
-      <span>커뮤니티</span>
+      <span data-i18n="nav.community"></span>
     </a>
     <a class="tab" href="write.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
-      <span>글쓰기</span>
+      <span data-i18n="nav.write"></span>
     </a>
     <a class="tab" href="profile.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
-      <span>나</span>
+      <span data-i18n="nav.me"></span>
     </a>
   </nav>
 </div>
@@ -102,6 +102,7 @@
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
 <script src="js/data.js?v=7"></script>
+<script src="js/i18n.js?v=1"></script>
 <script>
   function heartIcon() {
     return '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.8.6 5 2.2 1.2-1.6 3-2.5 5-2.2 3.6.5 5.2 4.2 3.6 7.7C19.5 16.4 12 21 12 21z"/></svg>';
@@ -123,14 +124,14 @@
     var add = document.createElement("a");
     add.href = "channels.html";
     add.className = "chip-link";
-    add.textContent = "+ 채널 추가";
+    add.textContent = window.LWI.t("home.addChannel");
     el.appendChild(add);
   }
 
   function renderFeed(posts) {
     var el = document.getElementById("feed");
     if (!posts.length) {
-      el.innerHTML = '<div class="empty-state"><p>아직 등록된 이야기가 없어요. 첫 이야기를 남겨보세요.</p></div>';
+      el.innerHTML = '<div class="empty-state"><p>' + window.LWI.t("home.emptyFeed") + '</p></div>';
       return;
     }
     el.innerHTML = "";
@@ -140,8 +141,8 @@
       div.innerHTML =
         '<div class="post-top">' +
           '<span class="tag">' + (p.channelName || "") + '</span>' +
-          '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + (p.kind === "evidence" ? "근거자료" : "경험담") + '</span>' +
-          '<span class="post-who">' + (p.authorNickname || "익명") + '</span>' +
+          '<span class="kind ' + (p.kind === "evidence" ? "evi" : "exp") + '">' + window.LWI.t(p.kind === "evidence" ? "common.kindEvidence" : "common.kindExperience") + '</span>' +
+          '<span class="post-who">' + (p.authorNickname || window.LWI.t("common.anonymous")) + '</span>' +
         '</div>' +
         (p.imageUrl ? '<a href="post.html?id=' + p.id + '"><img class="feed-thumb" src="' + p.imageUrl + '" alt=""></a>' : "") +
         '<p class="post-body"><a href="post.html?id=' + p.id + '" style="color:inherit;">' + (p.body || "").slice(0, 90) + '</a></p>' +
@@ -156,14 +157,14 @@
   window.LWI.requireAuth(function (user, profile) {
     if (!user) {
       // Firebase 미설정 상태 — 데모용 정적 표시
-      document.getElementById("hello-nickname").textContent = "고요한하루";
-      document.getElementById("checkin-count").textContent = "- 일째 기록 중";
+      document.getElementById("hello-text").textContent = window.LWI.t("home.hello", { "{name}": "고요한하루" });
+      document.getElementById("checkin-count").textContent = window.LWI.t("home.streak", { "{n}": "-" });
       renderChannels(window.LWI.FALLBACK_MAIN_CHANNELS, []);
       renderFeed([]);
       return;
     }
 
-    document.getElementById("hello-nickname").textContent = profile.nickname;
+    document.getElementById("hello-text").textContent = window.LWI.t("home.hello", { "{name}": profile.nickname });
 
     window.LWI.getTodayCheckin(user.uid).then(function (checkin) {
       if (checkin) {
@@ -173,7 +174,7 @@
       }
     });
     window.LWI.getCheckinCount(user.uid).then(function (n) {
-      document.getElementById("checkin-count").textContent = n + "일째 기록 중";
+      document.getElementById("checkin-count").textContent = window.LWI.t("home.streak", { "{n}": n });
     });
     document.querySelectorAll(".mood-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
@@ -182,7 +183,7 @@
         window.LWI.saveCheckin(user.uid, btn.dataset.mood).then(function () {
           return window.LWI.getCheckinCount(user.uid);
         }).then(function (n) {
-          document.getElementById("checkin-count").textContent = n + "일째 기록 중";
+          document.getElementById("checkin-count").textContent = window.LWI.t("home.streak", { "{n}": n });
         });
       });
     });

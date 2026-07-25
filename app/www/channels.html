@@ -30,41 +30,41 @@
 <div class="app">
   <div class="topbar">
     <a class="back" href="home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
-    <h1>채널</h1>
+    <h1 data-i18n="channels.title"></h1>
     <a class="action" href="search.html" style="display:flex;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg></a>
   </div>
   <div class="content">
-    <div class="group-label">메인 채널</div>
-    <div id="main-channels"><div class="empty-state"><p>불러오는 중...</p></div></div>
+    <div class="group-label" data-i18n="channels.mainChannels"></div>
+    <div id="main-channels"><div class="empty-state"><p>…</p></div></div>
 
-    <div class="group-label">서브 채널</div>
-    <div id="sub-channels"><div class="empty-state"><p>아직 없어요.</p></div></div>
+    <div class="group-label" data-i18n="channels.subChannels"></div>
+    <div id="sub-channels"><div class="empty-state"><p data-i18n="channels.empty"></p></div></div>
 
     <div class="new-channel">
       <div class="row">
-        <input id="new-name" type="text" maxlength="16" placeholder="원하는 질병 이름으로 채널 만들기">
-        <button class="btn btn-primary" style="width:auto;" id="new-btn">만들기</button>
+        <input id="new-name" type="text" maxlength="16" data-i18n-placeholder="channels.newChannelPlaceholder">
+        <button class="btn btn-primary" style="width:auto;" id="new-btn" data-i18n="channels.newChannelBtn"></button>
       </div>
-      <p>참여자가 많아지면 메인 채널로 승격될 수 있어요.</p>
+      <p data-i18n="channels.newChannelNote"></p>
     </div>
   </div>
 
   <nav class="tabbar">
     <a class="tab" href="home.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3z"/></svg>
-      <span>홈</span>
+      <span data-i18n="nav.home"></span>
     </a>
     <a class="tab on" href="channels.html">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 9 9 0 0 1-3.8-.9L3 20l1.3-4.3a8.5 8.5 0 0 1-1.1-4.2A8.4 8.4 0 0 1 12 3a8.3 8.3 0 0 1 9 8.5z"/></svg>
-      <span>커뮤니티</span>
+      <span data-i18n="nav.community"></span>
     </a>
     <a class="tab" href="write.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
-      <span>글쓰기</span>
+      <span data-i18n="nav.write"></span>
     </a>
     <a class="tab" href="profile.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c1.4-3.6 4.3-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></svg>
-      <span>나</span>
+      <span data-i18n="nav.me"></span>
     </a>
   </nav>
 </div>
@@ -76,9 +76,10 @@
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
 <script src="js/data.js?v=7"></script>
+<script src="js/i18n.js?v=1"></script>
 <script>
   function renderList(el, channels, joined, uid) {
-    if (!channels.length) { el.innerHTML = '<div class="empty-state"><p>아직 없어요.</p></div>'; return; }
+    if (!channels.length) { el.innerHTML = '<div class="empty-state"><p>' + window.LWI.t("channels.empty") + '</p></div>'; return; }
     el.innerHTML = "";
     channels.forEach(function (c) {
       var row = document.createElement("div");
@@ -87,8 +88,8 @@
       var top =
         '<div class="ch-row-top">' +
           '<a href="channel.html?id=' + c.id + '">' + c.name + '</a>' +
-          '<span class="count">' + (c.memberCount || 0) + '명</span>' +
-          '<button data-join="' + c.id + '" class="' + (isJoined ? "joined" : "") + '">' + (isJoined ? "참여중" : "참여하기") + '</button>' +
+          '<span class="count">' + window.LWI.t("channels.memberCountShort", { "{n}": c.memberCount || 0 }) + '</span>' +
+          '<button data-join="' + c.id + '" class="' + (isJoined ? "joined" : "") + '">' + window.LWI.t(isJoined ? "channels.joined" : "channels.join") + '</button>' +
         '</div>';
       var promo = "";
       if (c.tier === "sub") {
@@ -96,9 +97,9 @@
         var threshold = window.LWI.MAIN_PROMOTION_THRESHOLD;
         var pct = Math.min(100, Math.round((count / threshold) * 100));
         promo = count >= threshold
-          ? '<div class="promo-label ready">메인 채널 승격 조건을 채웠어요 · 검토 중</div>'
+          ? '<div class="promo-label ready">' + window.LWI.t("channels.promoReady") + '</div>'
           : '<div class="promo-track"><div class="promo-fill" style="width:' + pct + '%"></div></div>' +
-            '<div class="promo-label">메인 채널 승격까지 ' + (threshold - count) + '명</div>';
+            '<div class="promo-label">' + window.LWI.t("channels.promoLabel", { "{n}": threshold - count }) + '</div>';
       }
       row.innerHTML = top + promo;
       el.appendChild(row);
@@ -107,7 +108,7 @@
       btn.addEventListener("click", function () {
         if (!uid) return;
         window.LWI.joinChannel(uid, btn.dataset.join).then(function () {
-          btn.textContent = "참여중";
+          btn.textContent = window.LWI.t("channels.joined");
           btn.classList.add("joined");
         });
       });

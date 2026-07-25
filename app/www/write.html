@@ -36,54 +36,54 @@
 <div class="app">
   <div class="topbar">
     <a class="back" id="back-link" href="channels.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
-    <h1>이야기 남기기</h1>
+    <h1 data-i18n="write.title"></h1>
   </div>
   <div class="content">
     <div class="field">
-      <label for="channel-select">채널</label>
+      <label for="channel-select" data-i18n="write.channelLabel"></label>
       <select id="channel-select" style="width:100%; font-size:15px; padding:13px 14px; border-radius:12px; border:1px solid var(--line-strong); background:var(--surface); color:var(--ink);"></select>
     </div>
 
     <div class="kind-toggle">
       <div style="flex:1;">
-        <button type="button" class="on exp" id="kind-exp">경험담</button>
-        <div class="desc">내가 직접 겪은 이야기</div>
+        <button type="button" class="on exp" id="kind-exp" data-i18n="common.kindExperience"></button>
+        <div class="desc" data-i18n="write.kindExperienceDesc"></div>
       </div>
       <div style="flex:1;">
-        <button type="button" class="evi" id="kind-evi">근거자료</button>
-        <div class="desc">출처가 있는 정보</div>
+        <button type="button" class="evi" id="kind-evi" data-i18n="common.kindEvidence"></button>
+        <div class="desc" data-i18n="write.kindEvidenceDesc"></div>
       </div>
     </div>
 
     <div class="field" id="source-field">
-      <label for="source">출처</label>
-      <input id="source" type="text" placeholder="예: OO병원 칼럼, 논문명 등">
+      <label for="source" data-i18n="write.sourceLabel"></label>
+      <input id="source" type="text" data-i18n-placeholder="write.sourcePlaceholder">
     </div>
 
     <div class="image-field">
       <input type="file" id="image-input" accept="image/*" style="display:none;">
       <button type="button" class="image-add" id="image-add-btn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-        사진 추가 (선택)
+        <span data-i18n="write.imageAdd"></span>
       </button>
       <div class="image-preview" id="image-preview" style="display:none;">
         <img id="image-preview-img" alt="">
-        <button type="button" id="image-remove-btn" aria-label="사진 제거">
+        <button type="button" id="image-remove-btn" aria-label="remove">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
     </div>
 
     <div class="field">
-      <label for="body">내용</label>
-      <textarea id="body" rows="8" placeholder="같은 병을 겪는 사람들에게 전하고 싶은 이야기를 편하게 적어주세요."></textarea>
+      <label for="body" data-i18n="write.bodyLabel"></label>
+      <textarea id="body" rows="8" data-i18n-placeholder="write.bodyPlaceholder"></textarea>
       <div class="error" id="err-body"></div>
     </div>
 
-    <p style="font-size:12px; color:var(--ink-faint); margin: -6px 0 18px;">유병장수는 의료행위를 중개·알선하지 않는 정보 공유 목적의 서비스입니다. 이 내용은 병원 치료를 대체하지 않으며, "최초", "유일", "100% 치료", "부작용 없음"처럼 의학적 진단·효능을 단정하는 표현은 게시할 수 없습니다.</p>
+    <p style="font-size:12px; color:var(--ink-faint); margin: -6px 0 18px;" data-i18n="write.disclaimer"></p>
     <p class="error" id="err-banned" style="display:none; margin: -12px 0 18px;"></p>
 
-    <button class="btn btn-primary" id="submit-btn">올리기</button>
+    <button class="btn btn-primary" id="submit-btn" data-i18n="write.submit"></button>
   </div>
 </div>
 
@@ -95,6 +95,7 @@
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
 <script src="js/data.js?v=7"></script>
+<script src="js/i18n.js?v=1"></script>
 <script src="js/ui.js?v=1"></script>
 <script>
   var params = new URLSearchParams(window.location.search);
@@ -109,7 +110,7 @@
     var file = imageInput.files[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
-      window.LWI.showToast("사진은 5MB 이하로 올려주세요.");
+      window.LWI.showToast(window.LWI.t("write.imageTooLarge"));
       imageInput.value = "";
       return;
     }
@@ -174,14 +175,14 @@
 
       if (body.length < 10) {
         bodyField.closest(".field").classList.add("has-error");
-        errEl.textContent = "10자 이상 적어주세요.";
+        errEl.textContent = window.LWI.t("write.errShort");
         return;
       }
 
       var sourceVal = kind === "evidence" ? document.getElementById("source").value.trim() : "";
       var banned = window.LWI.findBannedTerm(body) || window.LWI.findBannedTerm(sourceVal);
       if (banned) {
-        bannedEl.textContent = '"' + banned + '"는 의학적 효능을 단정하는 표현이라 게시할 수 없어요. 문구를 수정해주세요.';
+        bannedEl.textContent = window.LWI.t("write.errBanned", { "{term}": banned });
         bannedEl.style.display = "block";
         return;
       }
@@ -201,7 +202,7 @@
 
       var submitBtn = document.getElementById("submit-btn");
       submitBtn.disabled = true;
-      submitBtn.textContent = selectedFile ? "사진 업로드 중..." : "올리는 중...";
+      submitBtn.textContent = window.LWI.t(selectedFile ? "write.uploading" : "write.posting");
 
       var uploadStep = selectedFile
         ? window.LWI.uploadPostImage(user.uid, selectedFile).then(function (url) { post.imageUrl = url; })
@@ -213,8 +214,8 @@
         window.location.href = "post.html?id=" + ref.id;
       }).catch(function (err) {
         submitBtn.disabled = false;
-        submitBtn.textContent = "올리기";
-        bannedEl.textContent = err.message || "문제가 발생했어요. 다시 시도해주세요.";
+        submitBtn.textContent = window.LWI.t("write.submit");
+        bannedEl.textContent = err.message || window.LWI.t("write.errGeneric");
         bannedEl.style.display = "block";
       });
     });
