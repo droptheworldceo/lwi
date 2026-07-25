@@ -16,6 +16,7 @@
   --serif: "Iowan Old Style", "Noto Serif KR", Georgia, "Apple SD Gothic Neo", serif;
   --sans: "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --kup-banner-h: 34px;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -50,10 +51,46 @@ input, textarea, select, button { font-family: inherit; }
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
+/* ---------- K-Up Learning cross-promo banner ---------- */
+.kup-banner {
+  position: sticky;
+  top: 0;
+  z-index: 11;
+  height: var(--kup-banner-h);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  background: var(--accent-2-soft);
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.kup-banner .kup-badge {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--accent-2);
+  color: #fff;
+}
+.kup-banner .kup-text {
+  flex: 1;
+  font-weight: 600;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kup-banner .kup-arrow { flex: none; color: var(--accent-2); font-weight: 700; }
+
 /* ---------- Top bar ---------- */
 .topbar {
   position: sticky;
-  top: 0;
+  top: var(--kup-banner-h);
   z-index: 10;
   display: flex;
   align-items: center;
