@@ -80,6 +80,27 @@
     color: var(--ink-faint);
     text-transform: uppercase;
   }
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
+  .nav-login {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line-strong);
+    padding: 9px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-login:hover { border-color: var(--accent); color: var(--accent-deep); }
+  .hero-start {
+    display: block;
+    margin: 14px 0 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent-deep);
+  }
 
   /* ---------- Language switcher (UI mockup — labels only, no translation) ---------- */
   .lang-switch { position: relative; }
@@ -323,6 +344,13 @@
   @media (max-width: 640px) {
     .feat-grid { grid-template-columns: 1fr; }
   }
+  @media (max-width: 400px) {
+    .nav { padding: 20px 16px; }
+    .nav .mark { font-size: 15px; }
+    .nav-actions { gap: 6px; }
+    .lang-current { padding: 7px 10px; font-size: 12px; }
+    .nav-login { padding: 7px 12px; font-size: 12px; }
+  }
 
   /* ---------- Channel preview ---------- */
   .channel-chips {
@@ -396,18 +424,21 @@
 <div class="page">
   <nav class="nav">
     <div class="mark">유병장수 <em>· LWI</em></div>
-    <div class="lang-switch">
-      <button class="lang-current" type="button" aria-haspopup="listbox" aria-expanded="false">
-        <span class="lang-current-label">한국어</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <ul class="lang-list" role="listbox">
-        <li class="lang-item" role="option" aria-selected="true" data-label="한국어"><span class="native">한국어</span><span class="en">KOR</span></li>
-        <li class="lang-item" role="option" aria-selected="false" data-label="English"><span class="native">English</span><span class="en">ENG</span></li>
-        <li class="lang-item" role="option" aria-selected="false" data-label="中文"><span class="native">中文</span><span class="en">CHN</span></li>
-        <li class="lang-item" role="option" aria-selected="false" data-label="日本語"><span class="native">日本語</span><span class="en">JPN</span></li>
-        <li class="lang-item" role="option" aria-selected="false" data-label="Tiếng Việt"><span class="native">Tiếng Việt</span><span class="en">VIE</span></li>
-      </ul>
+    <div class="nav-actions">
+      <div class="lang-switch">
+        <button class="lang-current" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span class="lang-current-label">한국어</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <ul class="lang-list" role="listbox">
+          <li class="lang-item" role="option" aria-selected="true" data-label="한국어"><span class="native">한국어</span><span class="en">KOR</span></li>
+          <li class="lang-item" role="option" aria-selected="false" data-label="English"><span class="native">English</span><span class="en">ENG</span></li>
+          <li class="lang-item" role="option" aria-selected="false" data-label="中文"><span class="native">中文</span><span class="en">CHN</span></li>
+          <li class="lang-item" role="option" aria-selected="false" data-label="日本語"><span class="native">日本語</span><span class="en">JPN</span></li>
+          <li class="lang-item" role="option" aria-selected="false" data-label="Tiếng Việt"><span class="native">Tiếng Việt</span><span class="en">VIE</span></li>
+        </ul>
+      </div>
+      <a class="nav-login" href="app/www/signup.html">로그인</a>
     </div>
   </nav>
 
@@ -423,6 +454,7 @@
         <button type="submit">출시 알림 받기</button>
       </form>
       <p class="fine">스팸 없이 출시 소식만 · 이메일은 인증 목적에만 사용되며 공개되지 않습니다</p>
+      <a class="hero-start" href="app/www/signup.html">지금 바로 이메일로 시작하기 →</a>
     </div>
   </header>
 
