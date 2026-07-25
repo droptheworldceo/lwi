@@ -1,0 +1,11 @@
+{
+  "name": "lwi-functions",
+  "description": "유병장수(LWI) Cloud Functions — 신고 자동조치, 채널 자동 승격",
+  "engines": { "node": "20" },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^5.1.1"
+  },
+  "private": true
+}

@@ -68,6 +68,7 @@
     <div id="blocked-list"><div class="empty-state"><p>차단한 사용자가 없어요.</p></div></div>
 
     <div class="signout">
+      <a class="btn btn-ghost" href="settings.html" style="display:flex; align-items:center; justify-content:center; margin-bottom:10px; text-decoration:none;">설정</a>
       <button class="btn btn-ghost" id="signout-btn">로그아웃</button>
     </div>
   </div>
@@ -98,7 +99,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=6"></script>
+<script src="js/data.js?v=7"></script>
 <script>
   window.LWI.requireAuth(function (user, profile) {
     if (!window.LWI.isConfigured) return;

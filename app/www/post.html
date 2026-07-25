@@ -72,7 +72,7 @@
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
 <script src="js/auth.js?v=2"></script>
-<script src="js/data.js?v=6"></script>
+<script src="js/data.js?v=7"></script>
 <script src="js/ui.js?v=1"></script>
 <script>
   var params = new URLSearchParams(window.location.search);
@@ -125,6 +125,10 @@
 
     window.LWI.getPost(postId).then(function (post) {
       if (!post) return;
+      if (post.hidden && post.authorUid !== uid) {
+        document.querySelector(".content").innerHTML = '<div class="empty-state"><p>신고가 누적되어 숨김 처리된 게시글입니다.</p></div>';
+        return;
+      }
       document.getElementById("back-link").href = "channel.html?id=" + encodeURIComponent(post.channelId);
       document.getElementById("topbar-channel").textContent = post.channelName || "이야기";
       var kindEl = document.getElementById("post-kind");

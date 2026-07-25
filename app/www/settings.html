@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>유병장수 · 설정</title>
+<link rel="stylesheet" href="css/lwi.css?v=2">
+<style>
+  .content { flex: 1; overflow-y: auto; padding: 20px 20px 40px; }
+  .group-label { font-size: 12px; font-weight: 700; color: var(--ink-faint); margin: 26px 0 10px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .group-label:first-child { margin-top: 4px; }
+  .setting-row { padding: 14px 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; margin-bottom: 8px; }
+  .setting-row .title { font-size: 14.5px; font-weight: 600; margin-bottom: 4px; }
+  .setting-row .desc { font-size: 12.5px; color: var(--ink-faint); line-height: 1.6; }
+  .danger-zone { margin-top: 30px; padding: 16px; border: 1px solid var(--accent); border-radius: 14px; background: var(--accent-ink); }
+  .danger-zone .title { font-size: 14.5px; font-weight: 700; color: var(--accent-deep); margin-bottom: 6px; }
+  .danger-zone .desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+  .danger-zone .btn { background: none; border: 1px solid var(--accent-deep); color: var(--accent-deep); }
+  .confirm-box { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: none; }
+  .confirm-box input { width: 100%; font-size: 14px; padding: 12px 13px; border-radius: 10px; border: 1px solid var(--line-strong); background: var(--surface); margin-bottom: 10px; }
+  .confirm-box .row { display: flex; gap: 8px; }
+  .confirm-box .row button { flex: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <a class="back" href="profile.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg></a>
+    <h1>설정</h1>
+  </div>
+  <div class="content">
+    <div class="group-label">언어</div>
+    <div class="setting-row">
+      <div class="title">한국어</div>
+      <div class="desc">한국어·영어·중국어·일본어·베트남어 5개 국어 지원을 준비 중입니다. 지금은 한국어로만 이용할 수 있어요.</div>
+    </div>
+
+    <div class="group-label">알림</div>
+    <div class="setting-row">
+      <div class="title">알림 기능 준비 중</div>
+      <div class="desc">댓글·공감 알림 기능은 아직 준비 중이라, 지금은 앱에 직접 들어와 확인해주셔야 해요.</div>
+    </div>
+
+    <div class="danger-zone">
+      <div class="title">계정 삭제</div>
+      <div class="desc">
+        계정을 삭제하면 로그인 정보와 프로필(닉네임, 참여 채널, 체크인 기록)이 영구히 사라지고 되돌릴 수 없습니다.
+        이미 작성하신 게시글·댓글은 커뮤니티 기록으로 남아 삭제되지 않습니다 (닉네임 표기만 유지).
+      </div>
+      <button class="btn" id="delete-open-btn" style="width:auto; padding:10px 16px;">계정 삭제하기</button>
+
+      <div class="confirm-box" id="confirm-box">
+        <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 10px;">본인 확인을 위해 비밀번호를 다시 입력해주세요.</p>
+        <input id="confirm-password" type="password" placeholder="비밀번호">
+        <p class="error" id="delete-error" style="display:none;"></p>
+        <div class="row">
+          <button class="btn btn-ghost" id="delete-cancel-btn" type="button">취소</button>
+          <button class="btn" id="delete-confirm-btn" type="button" style="background:var(--accent-deep); color:#fff;">영구 삭제</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js?v=2"></script>
+<script src="js/firebase-init.js?v=2"></script>
+<script src="js/auth.js?v=2"></script>
+<script>
+  window.LWI.requireAuth(function (user) {
+    if (!window.LWI.isConfigured) return;
+
+    var openBtn = document.getElementById("delete-open-btn");
+    var box = document.getElementById("confirm-box");
+    var errEl = document.getElementById("delete-error");
+
+    openBtn.addEventListener("click", function () {
+      box.style.display = "block";
+      openBtn.style.display = "none";
+    });
+    document.getElementById("delete-cancel-btn").addEventListener("click", function () {
+      box.style.display = "none";
+      openBtn.style.display = "inline-flex";
+      errEl.style.display = "none";
+      document.getElementById("confirm-password").value = "";
+    });
+
+    document.getElementById("delete-confirm-btn").addEventListener("click", function () {
+      var password = document.getElementById("confirm-password").value;
+      errEl.style.display = "none";
+      if (!password) {
+        errEl.textContent = "비밀번호를 입력해주세요.";
+        errEl.style.display = "block";
+        return;
+      }
+
+      var confirmBtn = document.getElementById("delete-confirm-btn");
+      confirmBtn.disabled = true;
+
+      var cred = firebase.auth.EmailAuthProvider.credential(user.email, password);
+      user.reauthenticateWithCredential(cred)
+        .then(function () { return window.LWI.db.collection("users").doc(user.uid).delete(); })
+        .then(function () { return user.delete(); })
+        .then(function () { window.location.href = "signup.html"; })
+        .catch(function (err) {
+          confirmBtn.disabled = false;
+          if (err.code === "auth/wrong-password") errEl.textContent = "비밀번호가 일치하지 않아요.";
+          else errEl.textContent = err.message || "삭제 중 문제가 발생했어요.";
+          errEl.style.display = "block";
+        });
+    });
+  });
+</script>
+</body>
+</html>

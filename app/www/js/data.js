@@ -65,7 +65,8 @@ window.LWI.listPosts = function (opts) {
   var fetchN = opts.channelId ? Math.max(opts.limitN || 20, 100) : (opts.limitN || 20);
   return window.LWI.db.collection("posts").orderBy("createdAt", "desc").limit(fetchN)
     .get().then(function (snap) {
-      var list = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      var list = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })
+        .filter(function (p) { return !p.hidden; });
       if (opts.channelId) list = list.filter(function (p) { return p.channelId === opts.channelId; });
       return list.slice(0, opts.limitN || 20);
     });
@@ -121,7 +122,8 @@ window.LWI.toggleEmpathy = function (postId, uid) {
 window.LWI.listComments = function (postId) {
   return window.LWI.db.collection("posts").doc(postId).collection("comments")
     .orderBy("createdAt", "asc").get().then(function (snap) {
-      return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+      return snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })
+        .filter(function (c) { return !c.hidden; });
     });
 };
 
