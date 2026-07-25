@@ -67,17 +67,6 @@ input, textarea, select, button { font-family: inherit; }
   white-space: nowrap;
   overflow: hidden;
 }
-.kup-banner .kup-badge {
-  flex: none;
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--accent-2);
-  color: #fff;
-}
 .kup-banner .kup-text {
   flex: 1;
   font-weight: 600;
