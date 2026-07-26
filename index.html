@@ -427,10 +427,13 @@
     justify-content: center;
     gap: 8px;
     padding: 9px 16px;
-    background: var(--accent-2-soft);
+    background: linear-gradient(90deg, #EAF6FF, #D3ECFB);
     border-bottom: 1px solid var(--line);
     font-size: 12.5px;
     text-align: center;
+  }
+  @media (prefers-color-scheme: dark) {
+    .kup-banner { background: linear-gradient(90deg, #17303D, #102530); }
   }
   .kup-banner .kup-text { font-weight: 600; color: var(--ink); }
   .kup-banner .kup-arrow { flex: none; color: var(--accent-2); font-weight: 700; }

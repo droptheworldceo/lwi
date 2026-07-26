@@ -61,11 +61,14 @@ input, textarea, select, button { font-family: inherit; }
   align-items: center;
   gap: 8px;
   padding: 0 16px;
-  background: var(--accent-2-soft);
+  background: linear-gradient(90deg, #EAF6FF, #D3ECFB);
   border-bottom: 1px solid var(--line);
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
+}
+@media (prefers-color-scheme: dark) {
+  .kup-banner { background: linear-gradient(90deg, #17303D, #102530); }
 }
 .kup-banner .kup-text {
   flex: 1;
