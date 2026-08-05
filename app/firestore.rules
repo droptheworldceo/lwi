@@ -13,10 +13,16 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid) && request.resource.data.nickname is string;
-      allow update: if isOwner(uid);
+      // points/streak/lastCheckinDate/badges는 checkIn Cloud Function(관리자 SDK, 규칙 우회)만 바꿀 수 있다.
+      // 클라이언트가 이 필드들을 건드리는 update는 전부 거부해 포인트 조작을 막는다.
+      allow update: if isOwner(uid) &&
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['points', 'streak', 'lastCheckinDate', 'badges']);
 
+      // 체크인 기록도 checkIn 함수만 쓸 수 있다. 클라이언트는 자신의 기록을 읽기만 한다.
       match /checkins/{date} {
-        allow read, write: if isOwner(uid);
+        allow read: if isOwner(uid);
+        allow write: if false;
       }
     }
 

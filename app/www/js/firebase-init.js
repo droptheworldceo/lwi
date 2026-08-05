@@ -9,6 +9,7 @@
     window.LWI.auth = firebase.auth();
     window.LWI.db = firebase.firestore();
     if (firebase.storage) window.LWI.storage = firebase.storage();
+    if (firebase.functions) window.LWI.functions = firebase.functions();
   }
 
   // 설정 전이면 페이지 상단에 안내 배너를 자동 삽입

@@ -61,7 +61,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="js/firebase-config.js?v=2"></script>
 <script src="js/firebase-init.js?v=2"></script>
-<script src="js/i18n.js?v=1"></script>
+<script src="js/auth.js?v=3"></script>
+<script src="js/i18n.js?v=2"></script>
 <script>
   var mode = "signup";
   var tabSignup = document.getElementById("tab-signup");
@@ -102,7 +103,7 @@
     submitBtn.disabled = true;
 
     var action = mode === "signup"
-      ? window.LWI.auth.createUserWithEmailAndPassword(email, password).then(function (cred) {
+      ? window.LWI.linkGuestAccount(email, password).then(function (cred) {
           return cred.user.sendEmailVerification().then(function () {
             window.location.href = "verify.html";
           });

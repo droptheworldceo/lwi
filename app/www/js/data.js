@@ -15,6 +15,9 @@ window.LWI.createUserProfile = function (uid, nickname) {
     nickname: nickname,
     joinedChannels: [],
     blockedUsers: {},
+    points: 0,
+    streak: 0,
+    badges: [],
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 };
@@ -196,9 +199,11 @@ window.LWI.todayKey = function () {
   return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
 };
 
-window.LWI.saveCheckin = function (uid, mood) {
-  return window.LWI.db.collection("users").doc(uid).collection("checkins").doc(window.LWI.todayKey())
-    .set({ mood: mood, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+// 체크인은 클라이언트가 직접 Firestore에 쓰지 않고, 포인트/스트릭 계산과 하루 1회 검증을
+// 전부 서버에서 처리하는 checkIn 콜러블 Cloud Function을 통해서만 이루어진다(부정 적립 방지).
+window.LWI.checkIn = function (mood, watchedAd) {
+  var call = window.LWI.functions.httpsCallable("checkIn");
+  return call({ mood: mood, watchedAd: !!watchedAd }).then(function (res) { return res.data; });
 };
 
 window.LWI.getTodayCheckin = function (uid) {

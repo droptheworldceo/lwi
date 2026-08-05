@@ -84,32 +84,26 @@ var DICT = {
     errShort: ["2자 이상 입력해주세요.", "Please enter at least 2 characters.", "请输入至少2个字符。", "2文字以上入力してください。", "Vui lòng nhập ít nhất 2 ký tự."]
   },
   home: {
-    headlineHtml: [
-      "병을 갖고도<br><em>장수</em>를 꿈꾸는",
-      "Living well,<br>even <em>with illness</em>",
-      "即使带病<br>也渴望<em>长寿</em>",
-      "病を抱えても<br><em>長寿</em>を夢見る",
-      "Dù mang bệnh,<br>vẫn mơ về <em>trường thọ</em>"
-    ],
-    hello: ["안녕하세요, {name}님", "Hi, {name}", "你好，{name}", "こんにちは、{name}さん", "Xin chào, {name}"],
+    pointsLabel: ["내 포인트", "My points", "我的积分", "マイポイント", "Điểm của tôi"],
     checkinQ: ["오늘 컨디션은 어떠세요?", "How are you feeling today?", "今天感觉怎么样？", "今日の体調はどうですか？", "Hôm nay bạn cảm thấy thế nào?"],
-    streak: ["{n}일째 기록 중", "{n}-day streak", "已连续记录{n}天", "{n}日連続記録中", "Đã ghi {n} ngày liên tiếp"],
+    checkinBtn: ["체크인하고 포인트 받기", "Check in & earn points", "打卡领积分", "チェックインしてポイント獲得", "Check-in để nhận điểm"],
+    streak: ["{n}일 연속 체크인", "{n}-day streak", "连续{n}天打卡", "{n}日連続チェックイン", "Chuỗi {n} ngày"],
+    streakZero: ["오늘부터 시작해요", "Start today", "从今天开始", "今日から始めよう", "Bắt đầu từ hôm nay"],
+    earnToast: ["+{n}P 적립!", "+{n}P earned!", "+{n}积分！", "+{n}P獲得！", "+{n}P đã nhận!"],
+    doneText: [
+      "{n}일 연속 체크인 중이에요. 내일 또 만나요!",
+      "You're on a {n}-day streak. See you tomorrow!",
+      "已连续打卡{n}天，明天见！",
+      "{n}日連続チェックイン中です。また明日！",
+      "Bạn đang có chuỗi {n} ngày. Hẹn gặp lại ngày mai!"
+    ],
     moodTough: ["힘듦", "Tough", "难受", "つらい", "Khó chịu"],
     moodTired: ["피곤", "Tired", "疲惫", "疲れた", "Mệt mỏi"],
     moodNormal: ["보통", "Okay", "一般", "普通", "Bình thường"],
     moodGood: ["좋음", "Good", "不错", "良い", "Tốt"],
-    myChannels: ["내 채널", "My channels", "我的频道", "マイチャンネル", "Kênh của tôi"],
-    seeAll: ["전체보기", "See all", "查看全部", "すべて見る", "Xem tất cả"],
-    addChannel: ["+ 채널 추가", "+ Add channel", "+ 添加频道", "+ チャンネル追加", "+ Thêm kênh"],
-    newStories: ["새로운 이야기", "New stories", "最新故事", "新着ストーリー", "Câu chuyện mới"],
-    more: ["더보기", "More", "更多", "もっと見る", "Xem thêm"],
-    emptyFeed: [
-      "아직 등록된 이야기가 없어요. 첫 이야기를 남겨보세요.",
-      "No stories yet. Be the first to share.",
-      "还没有故事，来发布第一个吧。",
-      "まだストーリーがありません。最初の投稿をしてみましょう。",
-      "Chưa có câu chuyện nào. Hãy là người đầu tiên chia sẻ."
-    ]
+    badge_streak_7: ["7일 연속 달성", "7-day streak", "连续7天达成", "7日連続達成", "Đạt chuỗi 7 ngày"],
+    badge_streak_30: ["30일 연속 달성", "30-day streak", "连续30天达成", "30日連続達成", "Đạt chuỗi 30 ngày"],
+    badge_streak_100: ["100일 연속 달성", "100-day streak", "连续100天达成", "100日連続達成", "Đạt chuỗi 100 ngày"]
   },
   channels: {
     title: ["채널", "Channels", "频道", "チャンネル", "Kênh"],
@@ -242,6 +236,8 @@ var DICT = {
     blockedEmpty: ["차단한 사용자가 없어요.", "No blocked users.", "暂无屏蔽用户。", "ブロックしたユーザーはいません。", "Không có người dùng nào bị chặn."],
     unblock: ["차단 해제", "Unblock", "取消屏蔽", "ブロック解除", "Bỏ chặn"],
     settingsLink: ["설정", "Settings", "设置", "設定", "Cài đặt"],
+    guestLabel: ["게스트로 이용 중", "Using as guest", "以访客身份使用中", "ゲストとして利用中", "Đang dùng dưới dạng khách"],
+    backupCta: ["이메일로 기록 백업하기", "Back up with email", "用邮箱备份记录", "メールで記録をバックアップ", "Sao lưu bằng email"],
     signout: ["로그아웃", "Log out", "退出登录", "ログアウト", "Đăng xuất"],
     save: ["저장", "Save", "保存", "保存", "Lưu"],
     myPostMeta: ["{channel} · 공감 {n}", "{channel} · {n} empathy", "{channel} · {n}个共鸣", "{channel} · 共感{n}", "{channel} · {n} đồng cảm"]
