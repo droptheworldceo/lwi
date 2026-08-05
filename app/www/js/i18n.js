@@ -102,6 +102,7 @@ var DICT = {
     moodNormal: ["보통", "Okay", "一般", "普通", "Bình thường"],
     moodGood: ["좋음", "Good", "不错", "良い", "Tốt"],
     badge_streak_7: ["7일 연속 달성", "7-day streak", "连续7天达成", "7日連続達成", "Đạt chuỗi 7 ngày"],
+    badge_streak_15: ["15일 연속 달성", "15-day streak", "连续15天达成", "15日連続達成", "Đạt chuỗi 15 ngày"],
     badge_streak_30: ["30일 연속 달성", "30-day streak", "连续30天达成", "30日連続達成", "Đạt chuỗi 30 ngày"],
     badge_streak_100: ["100일 연속 달성", "100-day streak", "连续100天达成", "100日連続達成", "Đạt chuỗi 100 ngày"]
   },

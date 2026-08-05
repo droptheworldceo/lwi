@@ -14,7 +14,7 @@ const MAIN_PROMOTION_THRESHOLD = 30;
 // 체크인 보상 정책. 스트릭 마일스톤은 1회성 보너스라 badges에 기록해 중복 지급을 막는다.
 const CHECKIN_BASE_POINTS = 10;
 const AD_BONUS_POINTS = 10;
-const STREAK_MILESTONES = { 7: 50, 30: 200, 100: 1000 };
+const STREAK_MILESTONES = { 7: 50, 15: 100, 30: 200, 100: 1000 };
 const VALID_MOODS = ["힘듦", "피곤", "보통", "좋음"];
 
 // 한국 시간(KST, UTC+9) 기준 YYYY-MM-DD. 클라이언트 기기 시간이 아니라
